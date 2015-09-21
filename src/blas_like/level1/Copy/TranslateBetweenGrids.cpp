@@ -52,6 +52,21 @@ void TranslateBetweenGrids
 
     const bool inBGrid = B.Grid().InGrid();
     const bool inAGrid = A.Grid().InGrid();
+#ifndef EL_RELEASE
+    LogFileCout( "colStride: ", colStride, ", ",
+                 "rowStride: ", rowStride, ", ",
+                 "colRank: ",   colRank,   ", ",
+                 "rowRank: ",   rowRank,   ", ",
+                 "colStrideA: ",colStrideA,", ",
+                 "rowStrideA: ",rowStrideA,", ",
+                 "colAlign: ",  colAlign,  ", ",
+                 "rowAlign: ",  rowAlign,  ", ",
+                 "colAlignA: ", colAlignA, ", ",
+                 "rowAlignA: ", rowAlignA, ", ",
+                 "inBGrid: ", inBGrid, ", ",
+                 "inAGrid: ", inAGrid
+                 );
+#endif
     if( !inBGrid && !inAGrid )
         return;
 
