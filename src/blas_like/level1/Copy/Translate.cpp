@@ -21,8 +21,6 @@ void Translate
     DEBUG_ONLY(CSE cse("copy::Translate"))
     if( A.Grid() != B.Grid() )
     {
-        LogFileCout("Translate: ", GridCompare(A.Grid(),B.Grid()));
-        LogicError( "Check point" );
         copy::TranslateBetweenGrids( A, B );
         return;
     }
