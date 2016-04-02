@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2009-2015, Jack Poulson
+   Copyright (c) 2009-2016, Jack Poulson
    All rights reserved.
 
    This file is part of Elemental and is under the BSD 2-Clause License, 
@@ -95,7 +95,30 @@ extern "C" {
         CReflect(side), CReflect(uplo), CReflect(orientation), \
         CReflect(alpha), *CReflect(A), \
         *CReflect(shifts), *CReflect(B) ) ) } \
-  /* QuasiTrsm */ \
+  /* SafeMultiShiftTrsm */ \
+  ElError ElSafeMultiShiftTrsm_ ## SIG \
+  ( ElLeftOrRight side, ElUpperOrLower uplo, ElOrientation orientation, \
+    CREFLECT(F) alpha, ElMatrix_ ## SIG A, \
+    ElConstMatrix_ ## SIG shifts, ElMatrix_ ## SIG B, \
+    ElMatrix_ ## SIG scales ) \
+  { EL_TRY( \
+      SafeMultiShiftTrsm( \
+	CReflect(side), CReflect(uplo), CReflect(orientation), \
+	CReflect(alpha), *CReflect(A), \
+	*CReflect(shifts), *CReflect(B), \
+	*CReflect(scales) ) ) } \
+  ElError ElSafeMultiShiftTrsmDist_ ## SIG \
+  ( ElLeftOrRight side, ElUpperOrLower uplo, ElOrientation orientation, \
+    CREFLECT(F) alpha, ElConstDistMatrix_ ## SIG A, \
+    ElConstDistMatrix_ ## SIG shifts, ElDistMatrix_ ## SIG B, \
+    ElDistMatrix_ ## SIG scales ) \
+  { EL_TRY( \
+      SafeMultiShiftTrsm( \
+	CReflect(side), CReflect(uplo), CReflect(orientation), \
+	CReflect(alpha), *CReflect(A), \
+	*CReflect(shifts), *CReflect(B), \
+	*CReflect(scales) ) ) } \
+  /* QuasiTrsm */	      \
   ElError ElQuasiTrsm_ ## SIG \
   ( ElLeftOrRight side, ElUpperOrLower uplo, ElOrientation orientation, \
     CREFLECT(F) alpha, ElConstMatrix_ ## SIG A, ElMatrix_ ## SIG B ) \

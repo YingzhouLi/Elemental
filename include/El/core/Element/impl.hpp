@@ -1,12 +1,11 @@
 /*
-   Copyright (c) 2009-2015, Jack Poulson
+   Copyright (c) 2009-2016, Jack Poulson
    All rights reserved.
 
    This file is part of Elemental and is under the BSD 2-Clause License, 
    which can be found in the LICENSE file in the root directory, or at 
    http://opensource.org/licenses/BSD-2-Clause
 */
-#pragma once
 #ifndef EL_ELEMENT_IMPL_HPP
 #define EL_ELEMENT_IMPL_HPP
 
@@ -73,11 +72,25 @@ Real RealPart( const Complex<Real>& alpha ) EL_NO_EXCEPT
 { return alpha.real(); }
 
 template<typename Real,typename>
+void RealPart( const Real& alpha, Real& alphaReal ) EL_NO_EXCEPT
+{ alphaReal = alpha; }
+template<typename Real,typename>
+void RealPart( const Complex<Real>& alpha, Real& alphaReal ) EL_NO_EXCEPT
+{ alphaReal = alpha.real(); }
+
+template<typename Real,typename>
 Real ImagPart( const Real& alpha ) EL_NO_EXCEPT
 { return 0; }
 template<typename Real,typename>
 Real ImagPart( const Complex<Real>& alpha ) EL_NO_EXCEPT
 { return alpha.imag(); }
+
+template<typename Real,typename>
+void ImagPart( const Real& alpha, Real& alphaImag ) EL_NO_EXCEPT
+{ alphaImag = 0; }
+template<typename Real,typename>
+void ImagPart( const Complex<Real>& alpha, Real& alphaImag ) EL_NO_EXCEPT
+{ alphaImag = alpha.imag(); }
 
 // Set the real/imaginary part of an element
 // -----------------------------------------
@@ -129,6 +142,14 @@ template<typename Real,typename>
 Complex<Real> Conj( const Complex<Real>& alpha ) EL_NO_EXCEPT
 { return Complex<Real>(alpha.real(),-alpha.imag()); }
 
+template<typename Real,typename>
+void Conj( const Real& alpha, Real& alphaConj ) EL_NO_EXCEPT
+{ alphaConj = alpha; }
+
+template<typename Real,typename>
+void Conj( const Complex<Real>& alpha, Complex<Real>& alphaConj ) EL_NO_EXCEPT
+{  alphaConj = std::conj(alpha); }
+
 // Return the complex argument
 // ---------------------------
 template<typename F,typename>
@@ -178,12 +199,12 @@ template<typename F,typename>
 F Exp( const F& alpha ) EL_NO_EXCEPT { return std::exp(alpha); }
 
 template<typename F,typename T,typename,typename>
-F Pow( const F& alpha, const T& beta ) EL_NO_EXCEPT
+F Pow( const F& alpha, const T& beta )
 { return std::pow(alpha,beta); }
 
 #ifdef EL_USE_64BIT_INTS
 template<typename F,typename>
-F Pow( const F& alpha, const int& beta ) EL_NO_EXCEPT
+F Pow( const F& alpha, const int& beta )
 { return Pow(alpha,F(beta)); }
 #endif
 
@@ -195,8 +216,12 @@ F Pow( const F& alpha, const int& beta ) EL_NO_EXCEPT
 template<typename F,typename>
 F Log( const F& alpha ) { return std::log(alpha); }
 
-template<typename Real,typename>
-Real Log2( const Real& alpha )
+template<typename Integer,typename,typename>
+double Log( const Integer& alpha )
+{ return std::log(alpha); }
+
+template<typename F,typename>
+F Log2( const F& alpha )
 { return std::log2(alpha); }
 
 template<typename Integer,typename,typename>
@@ -204,7 +229,18 @@ double Log2( const Integer& alpha )
 { return std::log2(alpha); }
 
 template<typename F,typename>
+F Log10( const F& alpha )
+{ return std::log10(alpha); }
+
+template<typename Integer,typename,typename>
+double Log10( const Integer& alpha )
+{ return std::log10(alpha); }
+
+template<typename F,typename>
 F Sqrt( const F& alpha ) { return std::sqrt(alpha); }
+
+template<typename F,typename>
+void Sqrt( const F& alpha, F& alphaSqrt ) { alphaSqrt = Sqrt(alpha); }
 
 // Trigonometric
 // =============

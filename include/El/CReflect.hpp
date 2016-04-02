@@ -1,12 +1,11 @@
 /*
-   Copyright (c) 2009-2015, Jack Poulson
+   Copyright (c) 2009-2016, Jack Poulson
    All rights reserved.
 
    This file is part of Elemental and is under the BSD 2-Clause License, 
    which can be found in the LICENSE file in the root directory, or at 
    http://opensource.org/licenses/BSD-2-Clause
 */
-#pragma once
 #ifndef EL_CREFLECT_C_HPP
 #define EL_CREFLECT_C_HPP
 
@@ -1093,14 +1092,29 @@ CReflect( const ElHermitianEigCtrl_z& ctrlC )
     return ctrl;
 }
 
+/* QDWHCtrl */
+inline ElQDWHCtrl CReflect( const QDWHCtrl& ctrl )
+{
+    ElQDWHCtrl ctrlC;
+    ctrlC.colPiv = ctrl.colPiv;
+    ctrlC.maxIts = ctrl.maxIts;
+    return ctrlC;
+}
+
+inline QDWHCtrl CReflect( const ElQDWHCtrl& ctrlC )
+{
+    QDWHCtrl ctrl;
+    ctrl.colPiv = ctrlC.colPiv;
+    ctrl.maxIts = ctrlC.maxIts;
+    return ctrl;
+}
+
 /* PolarCtrl */
 inline ElPolarCtrl CReflect( const PolarCtrl& ctrl )
 {
     ElPolarCtrl ctrlC;
     ctrlC.qdwh = ctrl.qdwh;
-    ctrlC.colPiv = ctrl.colPiv;
-    ctrlC.maxIts = ctrl.maxIts;
-    ctrlC.numIts = ctrl.numIts;
+    ctrlC.qdwhCtrl = CReflect(ctrl.qdwhCtrl);
     return ctrlC;
 }
 
@@ -1108,58 +1122,124 @@ inline PolarCtrl CReflect( const ElPolarCtrl& ctrlC )
 {
     PolarCtrl ctrl;
     ctrl.qdwh = ctrlC.qdwh;
-    ctrl.colPiv = ctrlC.colPiv;
-    ctrl.maxIts = ctrlC.maxIts;
-    ctrl.numIts = ctrlC.numIts;
+    ctrl.qdwhCtrl = CReflect(ctrlC.qdwhCtrl);
     return ctrl;
 }
 
+/* QDWHInfo */
+inline ElQDWHInfo CReflect( const QDWHInfo& info )
+{
+    ElQDWHInfo infoC;
+    infoC.numIts = info.numIts;
+    infoC.numQRIts = info.numQRIts;
+    infoC.numCholIts = info.numCholIts;
+    return infoC;
+}
+
+inline QDWHInfo CReflect( const ElQDWHInfo& infoC )
+{
+    QDWHInfo info;
+    info.numIts = infoC.numIts;
+    info.numQRIts = infoC.numQRIts;
+    info.numCholIts = infoC.numCholIts;
+    return info;
+}
+
+/* PolarInfo */
+inline ElPolarInfo CReflect( const PolarInfo& info )
+{
+    ElPolarInfo infoC;
+    infoC.qdwhInfo = CReflect(info.qdwhInfo);
+    return infoC;
+}
+
+inline PolarInfo CReflect( const ElPolarInfo& infoC )
+{
+    PolarInfo info;
+    info.qdwhInfo = CReflect(infoC.qdwhInfo);
+    return info;
+}
+
 /* SVDCtrl */
+inline ElSVDApproach CReflect( SVDApproach approach )
+{ return static_cast<ElSVDApproach>( approach ); }
+
+inline SVDApproach CReflect( ElSVDApproach approach )
+{ return static_cast<SVDApproach>( approach ); }
+
 inline SVDCtrl<float> CReflect( const ElSVDCtrl_s& ctrlC )
 {
     SVDCtrl<float> ctrl;
+    ctrl.approach = CReflect(ctrlC.approach);
+    ctrl.overwrite = ctrlC.overwrite;
+    ctrl.avoidComputingU = ctrlC.avoidComputingU;
+    ctrl.avoidComputingV = ctrlC.avoidComputingV;
+    ctrl.time = ctrlC.time;
+    ctrl.avoidLibflame = ctrlC.avoidLibflame;
+
     ctrl.seqQR = ctrlC.seqQR;
     ctrl.valChanRatio = ctrlC.valChanRatio;
     ctrl.fullChanRatio = ctrlC.fullChanRatio;
-    ctrl.thresholded = ctrlC.thresholded;
     ctrl.relative = ctrlC.relative;
     ctrl.tol = ctrlC.tol;
+
     return ctrl;
 }
 
 inline SVDCtrl<double> CReflect( const ElSVDCtrl_d& ctrlC )
 {
     SVDCtrl<double> ctrl;
+    ctrl.approach = CReflect(ctrlC.approach);
+    ctrl.overwrite = ctrlC.overwrite;
+    ctrl.avoidComputingU = ctrlC.avoidComputingU;
+    ctrl.avoidComputingV = ctrlC.avoidComputingV;
+    ctrl.time = ctrlC.time;
+    ctrl.avoidLibflame = ctrlC.avoidLibflame;
+
     ctrl.seqQR = ctrlC.seqQR;
     ctrl.valChanRatio = ctrlC.valChanRatio;
     ctrl.fullChanRatio = ctrlC.fullChanRatio;
-    ctrl.thresholded = ctrlC.thresholded;
     ctrl.relative = ctrlC.relative;
     ctrl.tol = ctrlC.tol;
+
     return ctrl;
 }
 
 inline ElSVDCtrl_s CReflect( const SVDCtrl<float>& ctrl )
 {
     ElSVDCtrl_s ctrlC;
+    ctrlC.approach = CReflect(ctrl.approach);
+    ctrlC.overwrite = ctrl.overwrite;
+    ctrlC.avoidComputingU = ctrl.avoidComputingU;
+    ctrlC.avoidComputingV = ctrl.avoidComputingV;
+    ctrlC.time = ctrl.time;
+    ctrlC.avoidLibflame = ctrl.avoidLibflame;
+
     ctrlC.seqQR = ctrl.seqQR;
     ctrlC.valChanRatio = ctrl.valChanRatio;
     ctrlC.fullChanRatio = ctrl.fullChanRatio;
-    ctrlC.thresholded = ctrl.thresholded;
     ctrlC.relative = ctrl.relative;
     ctrlC.tol = ctrl.tol;
+
     return ctrlC;
 }
 
 inline ElSVDCtrl_d CReflect( const SVDCtrl<double>& ctrl )
 {
     ElSVDCtrl_d ctrlC;
+    ctrlC.approach = CReflect(ctrl.approach);
+    ctrlC.overwrite = ctrl.overwrite;
+    ctrlC.avoidComputingU = ctrl.avoidComputingU;
+    ctrlC.avoidComputingV = ctrl.avoidComputingV;
+    ctrlC.time = ctrl.time;
+    ctrlC.avoidLibflame = ctrl.avoidLibflame;
+
     ctrlC.seqQR = ctrl.seqQR;
     ctrlC.valChanRatio = ctrl.valChanRatio;
     ctrlC.fullChanRatio = ctrl.fullChanRatio;
-    ctrlC.thresholded = ctrl.thresholded;
     ctrlC.relative = ctrl.relative;
     ctrlC.tol = ctrl.tol;
+
     return ctrlC;
 }
 
@@ -2573,6 +2653,7 @@ inline LLLInfo<float> CReflect( const ElLLLInfo_s& infoC )
     info.rank = infoC.rank;
     info.nullity = infoC.nullity;
     info.numSwaps = infoC.numSwaps;
+    info.firstSwap = infoC.firstSwap;
     info.logVol = infoC.logVol;
     return info;
 }
@@ -2585,6 +2666,7 @@ inline LLLInfo<double> CReflect( const ElLLLInfo_d& infoC )
     info.rank = infoC.rank;
     info.nullity = infoC.nullity;
     info.numSwaps = infoC.numSwaps;
+    info.firstSwap = infoC.firstSwap;
     info.logVol = infoC.logVol;
     return info;
 }
@@ -2597,6 +2679,7 @@ inline ElLLLInfo_s CReflect( const LLLInfo<float>& info )
     infoC.rank = info.rank;
     infoC.nullity = info.nullity;
     infoC.numSwaps = info.numSwaps;
+    infoC.firstSwap = info.firstSwap;
     infoC.logVol = info.logVol;
     return infoC;
 }
@@ -2609,6 +2692,7 @@ inline ElLLLInfo_d CReflect( const LLLInfo<double>& info )
     infoC.rank = info.rank;
     infoC.nullity = info.nullity;
     infoC.numSwaps = info.numSwaps;
+    infoC.firstSwap = info.firstSwap;
     infoC.logVol = info.logVol;
     return infoC;
 }
@@ -2619,11 +2703,14 @@ inline LLLCtrl<float> CReflect( const ElLLLCtrl_s& ctrlC )
     ctrl.delta = ctrlC.delta;
     ctrl.eta = ctrlC.eta;
     ctrl.variant = CReflect(ctrlC.variant);
+    ctrl.recursive = ctrlC.recursive;
+    ctrl.cutoff = ctrlC.cutoff;
     ctrl.presort = ctrlC.presort;
     ctrl.smallestFirst = ctrlC.smallestFirst;
     ctrl.reorthogTol = ctrlC.reorthogTol;
     ctrl.numOrthog = ctrlC.numOrthog;
     ctrl.zeroTol = ctrlC.zeroTol;
+    ctrl.blockingThresh = ctrlC.blockingThresh;
     ctrl.progress = ctrlC.progress;
     ctrl.time = ctrlC.time;
     ctrl.jumpstart = ctrlC.jumpstart;
@@ -2637,11 +2724,14 @@ inline LLLCtrl<double> CReflect( const ElLLLCtrl_d& ctrlC )
     ctrl.delta = ctrlC.delta;
     ctrl.eta = ctrlC.eta;
     ctrl.variant = CReflect(ctrlC.variant);
+    ctrl.recursive = ctrlC.recursive;
+    ctrl.cutoff = ctrlC.cutoff;
     ctrl.presort = ctrlC.presort;
     ctrl.smallestFirst = ctrlC.smallestFirst;
     ctrl.reorthogTol = ctrlC.reorthogTol;
     ctrl.numOrthog = ctrlC.numOrthog;
     ctrl.zeroTol = ctrlC.zeroTol;
+    ctrl.blockingThresh = ctrlC.blockingThresh;
     ctrl.progress = ctrlC.progress;
     ctrl.time = ctrlC.time;
     ctrl.jumpstart = ctrlC.jumpstart;
@@ -2655,11 +2745,14 @@ inline ElLLLCtrl_s CReflect( const LLLCtrl<float>& ctrl )
     ctrlC.delta = ctrl.delta;
     ctrlC.eta = ctrl.eta;
     ctrlC.variant = CReflect(ctrl.variant);
+    ctrlC.recursive = ctrl.recursive;
+    ctrlC.cutoff = ctrl.cutoff;
     ctrlC.presort = ctrl.presort;
     ctrlC.smallestFirst = ctrl.smallestFirst;
     ctrlC.reorthogTol = ctrl.reorthogTol;
     ctrlC.numOrthog = ctrl.numOrthog;
     ctrlC.zeroTol = ctrl.zeroTol;
+    ctrlC.blockingThresh = ctrl.blockingThresh;
     ctrlC.progress = ctrl.progress;
     ctrlC.time = ctrl.time;
     ctrlC.jumpstart = ctrl.jumpstart;
@@ -2673,11 +2766,14 @@ inline ElLLLCtrl_d CReflect( const LLLCtrl<double>& ctrl )
     ctrlC.delta = ctrl.delta;
     ctrlC.eta = ctrl.eta;
     ctrlC.variant = CReflect(ctrl.variant);
+    ctrlC.recursive = ctrl.recursive;
+    ctrlC.cutoff = ctrl.cutoff;
     ctrlC.presort = ctrl.presort;
     ctrlC.smallestFirst = ctrl.smallestFirst;
     ctrlC.reorthogTol = ctrl.reorthogTol;
     ctrlC.numOrthog = ctrl.numOrthog;
     ctrlC.zeroTol = ctrl.zeroTol;
+    ctrlC.blockingThresh = ctrl.blockingThresh;
     ctrlC.progress = ctrl.progress;
     ctrlC.time = ctrl.time;
     ctrlC.jumpstart = ctrl.jumpstart;

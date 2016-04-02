@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2009-2015, Jack Poulson
+   Copyright (c) 2009-2016, Jack Poulson
    All rights reserved.
 
    This file is part of Elemental and is under the BSD 2-Clause License, 
@@ -22,10 +22,9 @@ int main()
     Timer timer;
     DistMatrix<C> U, V;
     DistMatrix<Real,VR,STAR> s;
-    U = A;
     if( mpi::Rank() == 0 )
         timer.Start();
-    SVD( U, s, V );
+    SVD( A, U, s, V );
     if( mpi::Rank() == 0 )
         timer.Stop();
     const Real twoNormA = MaxNorm( s );
