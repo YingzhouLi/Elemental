@@ -9,16 +9,30 @@ int main( int argc, char* argv[] )
     {
         const Int m = Input("--m","matrix height",100);
         const Int n = Input("--n","matrix width",100);
+        const bool print = Input("--print","print",false);
         ProcessInput();
 
         DistMatrix<double> A;
         Zeros( A, m, n );
         for( int i=0; i < n; ++i )
-            A.Set(i,i,double(i));
+            A.Set(i,i,double(i+1));
+        if( print )
+            Print(A);
+        DistMatrix<double> Apre;
+        Zeros( Apre, m, n );
+        for( int i=0; i < 12; ++i )
+            Apre.Set(i,i,1.0);
+        for( int i=12; i < n; ++i )
+            Apre.Set(i,i,1.0/double(i+1));
+        if( print )
+            Print(Apre);
+
         DistMatrix<double> Ainv;
-        Zeros( Ainv, m, n );
-        for( int i=0; i < n; ++i )
-            Ainv.Set(i,i,1.0/double(i));
+        Ainv = A;
+        Inverse( Ainv );
+        if( print )
+            Print(Ainv);
+
         auto applyA =
             [&]( double alpha, const DistMultiVec<double>& X,
                  double beta, DistMultiVec<double>& Y )
@@ -33,14 +47,12 @@ int main( int argc, char* argv[] )
         auto precond =
             [&]( DistMultiVec<double>& W )
             {
-                /*
                 DistMatrix<double> WCopy;
                 Copy( W, WCopy );
                 DistMatrix<double> WMat;
                 Copy( W, WMat );
-                Gemm( NORMAL, NORMAL, double(1), Ainv, WCopy, double(0), WMat );
+                Gemm( NORMAL, NORMAL, double(1), Apre, WCopy, double(0), WMat );
                 Copy( WMat, W );
-                */
             };
 
         DistMatrix<double> bb;
@@ -48,7 +60,7 @@ int main( int argc, char* argv[] )
         DistMultiVec<double> b;
         Copy( bb, b );
         double relTol = 1e-12;
-        int restart = 30;
+        int restart = 10;
         int maxIts = floor(m/restart);
         bool progress = true;
 
