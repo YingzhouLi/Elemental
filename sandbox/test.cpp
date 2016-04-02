@@ -52,7 +52,7 @@ int main( int argc, char* argv[] )
         int maxIts = floor(m/restart);
         bool progress = true;
 
-        int iter = LGMRES( applyA, precond, b, relTol,
+        int iter = FGMRES( applyA, precond, b, relTol,
                            restart, maxIts, progress );
     }
     catch( std::exception& e ) { ReportException(e); }
