@@ -17,5 +17,3 @@ else()
 endif()
 
 set(OpenMP_CXX_FLAGS "-fopenmp")
-
-set(MATH_LIBS "-L/opt/apps/intel/15/composer_xe_2015.2.164/mkl/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_lapack95_lp64 -lmkl_blas95_lp64 -lmkl_sequential -lpthread -lgfortran /opt/apps/intel/15/composer_xe_2015.2.164/compiler/lib/intel64/libimf.a /opt/apps/intel/15/composer_xe_2015.2.164/compiler/lib/intel64/libirc.a -lm")
