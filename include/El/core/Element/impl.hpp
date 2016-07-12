@@ -106,7 +106,7 @@ void SetRealPart( Complex<Real>& alpha, const Real& beta ) EL_NO_EXCEPT
 template<typename Real,typename>
 void SetImagPart( Real& alpha, const Real& beta )
 {
-    DEBUG_ONLY(CSE cse("SetImagPart"))
+    DEBUG_CSE
     LogicError("Nonsensical assignment");
 }
 template<typename Real,typename>
@@ -127,7 +127,7 @@ EL_NO_EXCEPT
 template<typename Real,typename>
 void UpdateImagPart( Real& alpha, const Real& beta )
 {
-    DEBUG_ONLY(CSE cse("UpdateImagPart"))
+    DEBUG_CSE
     LogicError("Nonsensical update");
 }
 template<typename Real,typename>
@@ -170,11 +170,95 @@ template<typename T,typename>
 Base<T> Abs( const T& alpha ) EL_NO_EXCEPT { return std::abs(alpha); }
 
 template<typename Real,typename>
+Real SafeNormAbs( const Real& chi0Abs, const Real& chi1Abs )
+{
+    const Real maxAbs = Max( chi0Abs, chi1Abs );
+    const Real minAbs = Min( chi0Abs, chi1Abs );
+    if( minAbs == Real(0) )
+    {
+        return maxAbs;
+    }
+    else
+    {
+        const Real ratio = minAbs / maxAbs;
+        return maxAbs*Sqrt( 1 + ratio*ratio );
+    }
+}
+
+template<typename Real,typename>
+Real SafeNorm( const Real& chi0, const Real& chi1 )
+{
+    return SafeNormAbs( Abs(chi0), Abs(chi1) );
+}
+
+template<typename Real,typename>
+Real SafeNorm( const Real& chi0, const Real& chi1, const Real& chi2 )
+{
+    const Real chi0Abs = Abs(chi0); 
+    const Real chi1Abs = Abs(chi1);
+    const Real chi2Abs = Abs(chi2);
+    const Real maxAbs = Max( Max( chi0Abs, chi1Abs ), chi2Abs );
+    const Real minAbs = Min( Min( chi0Abs, chi1Abs ), chi2Abs );
+    if( maxAbs == Real(0) )
+    {
+        // Ensure NaN propagation
+        return chi0Abs + chi1Abs + chi2Abs;
+    }
+    else
+    {
+        const Real ratio0 = chi0Abs / maxAbs;
+        const Real ratio1 = chi1Abs / maxAbs;
+        const Real ratio2 = chi2Abs / maxAbs;
+
+        return maxAbs*Sqrt( ratio0*ratio0 + ratio1*ratio1 + ratio2*ratio2 );
+    }
+}
+
+template<typename Real,typename>
+Real SafeNorm
+( const Real& chi0, const Real& chi1, const Real& chi2, const Real& chi3 )
+{
+    const Real chi0Abs = Abs(chi0); 
+    const Real chi1Abs = Abs(chi1);
+    const Real chi2Abs = Abs(chi2);
+    const Real chi3Abs = Abs(chi3);
+    const Real maxAbs = Max( Max( Max( chi0Abs, chi1Abs ), chi2Abs ), chi3Abs );
+    const Real minAbs = Min( Min( Min( chi0Abs, chi1Abs ), chi2Abs ), chi3Abs );
+    if( maxAbs == Real(0) )
+    {
+        // Ensure NaN propagation
+        return chi0Abs + chi1Abs + chi2Abs + chi3Abs;
+    }
+    else
+    {
+        const Real ratio0 = chi0Abs / maxAbs;
+        const Real ratio1 = chi1Abs / maxAbs;
+        const Real ratio2 = chi2Abs / maxAbs;
+        const Real ratio3 = chi3Abs / maxAbs;
+
+        return maxAbs*
+          Sqrt( ratio0*ratio0 + ratio1*ratio1 + ratio2*ratio2 + ratio3*ratio3 );
+    }
+}
+
+template<typename Real>
+Real SafeNorm( const Real& chi0, const Complex<Real>& chi1 )
+{ return SafeNorm( chi0, chi1.real(), chi1.imag() ); }
+
+template<typename Real>
+Real SafeNorm( const Complex<Real>& chi0, const Real& chi1 )
+{ return SafeNorm( chi0.real(), chi0.imag(), chi1 ); }
+
+template<typename Real>
+Real SafeNorm( const Complex<Real>& chi0, const Complex<Real>& chi1 )
+{ return SafeNorm( chi0.real(), chi0.imag(), chi1.real(), chi1.imag() ); }
+
+template<typename Real,typename>
 Real SafeAbs( const Real& alpha ) EL_NO_EXCEPT { return Abs(alpha); }
 
 template<typename Real,typename>
 Real SafeAbs( const Complex<Real>& alpha ) EL_NO_EXCEPT
-{ return lapack::SafeNorm( alpha.real(), alpha.imag() ); }
+{ return SafeNorm( alpha.real(), alpha.imag() ); }
 
 template<typename Real,typename>
 Real OneAbs( const Real& alpha ) EL_NO_EXCEPT
@@ -217,12 +301,9 @@ template<typename F,typename T,typename,typename>
 F Pow( const F& alpha, const T& beta )
 { return std::pow(alpha,beta); }
 
-// TODO: Disable this?!?
-#ifdef EL_USE_64BIT_INTS
-template<typename F,typename>
-F Pow( const F& alpha, const int& beta )
-{ return Pow(alpha,F(beta)); }
-#endif
+template<typename F,typename T,typename,typename,typename>
+F Pow( const F& alpha, const T& beta )
+{ return Pow(alpha,Base<F>(beta)); }
 
 template<typename Real,typename,typename>
 Complex<Real> Pow( const Complex<Real>& alpha, const Complex<Real>& beta )

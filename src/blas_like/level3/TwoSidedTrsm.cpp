@@ -21,7 +21,7 @@ void TwoSidedTrsm
         Matrix<F>& A,
   const Matrix<F>& B )
 {
-    DEBUG_ONLY(CSE cse("TwoSidedTrsm"))
+    DEBUG_CSE
     if( uplo == LOWER )
         twotrsm::LVar4( diag, A, B );
     else
@@ -31,10 +31,10 @@ void TwoSidedTrsm
 template<typename F> 
 void TwoSidedTrsm
 ( UpperOrLower uplo, UnitOrNonUnit diag, 
-        ElementalMatrix<F>& A,
-  const ElementalMatrix<F>& B )
+        AbstractDistMatrix<F>& A,
+  const AbstractDistMatrix<F>& B )
 {
-    DEBUG_ONLY(CSE cse("TwoSidedTrsm"))
+    DEBUG_CSE
     if( uplo == LOWER )
         twotrsm::LVar4( diag, A, B );
     else
@@ -92,7 +92,7 @@ void TwoSidedTrsm
         DistMatrix<F,MC,MR,BLOCK>& A,
   const DistMatrix<F,MC,MR,BLOCK>& B )
 {
-    DEBUG_ONLY(CSE cse("TwoSidedTrsm"))
+    DEBUG_CSE
     twotrsm::ScaLAPACKHelper( uplo, diag, A, B );
 }
 
@@ -103,8 +103,8 @@ void TwoSidedTrsm
     const Matrix<F>& B ); \
   template void TwoSidedTrsm \
   ( UpperOrLower uplo, UnitOrNonUnit diag, \
-          ElementalMatrix<F>& A, \
-    const ElementalMatrix<F>& B ); \
+          AbstractDistMatrix<F>& A, \
+    const AbstractDistMatrix<F>& B ); \
   template void TwoSidedTrsm \
   ( UpperOrLower uplo, UnitOrNonUnit diag, \
           DistMatrix<F,STAR,STAR>& A, \

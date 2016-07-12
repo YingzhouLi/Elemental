@@ -16,12 +16,12 @@ void SUMMA_TTA
 ( Orientation orientA,
   Orientation orientB,
   T alpha,
-  const ElementalMatrix<T>& APre,
-  const ElementalMatrix<T>& BPre,
-        ElementalMatrix<T>& CPre )
+  const AbstractDistMatrix<T>& APre,
+  const AbstractDistMatrix<T>& BPre,
+        AbstractDistMatrix<T>& CPre )
 {
+    DEBUG_CSE
     DEBUG_ONLY(
-      CSE cse("gemm::SUMMA_TTA");
       AssertSameGrids( APre, BPre, CPre );
       if( orientA == NORMAL || orientB == NORMAL )
           LogicError("A and B must be (Conjugate)Transposed");
@@ -75,12 +75,12 @@ void SUMMA_TTB
 ( Orientation orientA,
   Orientation orientB,
   T alpha,
-  const ElementalMatrix<T>& APre,
-  const ElementalMatrix<T>& BPre,
-        ElementalMatrix<T>& CPre )
+  const AbstractDistMatrix<T>& APre,
+  const AbstractDistMatrix<T>& BPre,
+        AbstractDistMatrix<T>& CPre )
 {
+    DEBUG_CSE
     DEBUG_ONLY(
-      CSE cse("gemm::SUMMA_TTB");
       AssertSameGrids( APre, BPre, CPre );
       if( orientA == NORMAL || orientB == NORMAL )
           LogicError("A and B must be (Conjugate)Transposed");
@@ -137,12 +137,12 @@ void SUMMA_TTC
 ( Orientation orientA,
   Orientation orientB,
   T alpha,
-  const ElementalMatrix<T>& APre,
-  const ElementalMatrix<T>& BPre,
-        ElementalMatrix<T>& CPre )
+  const AbstractDistMatrix<T>& APre,
+  const AbstractDistMatrix<T>& BPre,
+        AbstractDistMatrix<T>& CPre )
 {
+    DEBUG_CSE
     DEBUG_ONLY(
-      CSE cse("gemm::SUMMA_TTC");
       AssertSameGrids( APre, BPre, CPre );
       if( orientA == NORMAL || orientB == NORMAL )
           LogicError("A and B must be (Conjugate)Transposed");
@@ -196,12 +196,12 @@ void SUMMA_TT
 ( Orientation orientA,
   Orientation orientB,
   T alpha,
-  const ElementalMatrix<T>& A,
-  const ElementalMatrix<T>& B,
-        ElementalMatrix<T>& C,
+  const AbstractDistMatrix<T>& A,
+  const AbstractDistMatrix<T>& B,
+        AbstractDistMatrix<T>& C,
   GemmAlgorithm alg=GEMM_DEFAULT )
 {
-    DEBUG_ONLY(CSE cse("gemm::SUMMA_TT"))
+    DEBUG_CSE
     const Int m = C.Height();
     const Int n = C.Width();
     const Int sumDim = A.Height();

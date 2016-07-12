@@ -13,7 +13,7 @@ namespace El {
 template<typename Real>
 void FoxLi( Matrix<Complex<Real>>& A, Int n, Real omega )
 {
-    DEBUG_ONLY(CSE cse("FoxLi"))
+    DEBUG_CSE
     typedef Complex<Real> C;
     const Real pi = 4*Atan( Real(1) );
     const C phi = Sqrt( C(0,omega/pi) ); 
@@ -28,12 +28,17 @@ void FoxLi( Matrix<Complex<Real>>& A, Int n, Real omega )
         e(j) = 1/betaInv;
     }
     Matrix<Real> x, Z;
-    HermitianTridiagEig( d, e, x, Z, UNSORTED );
+    HermitianTridiagEigCtrl<Real> ctrl;
+    ctrl.sort = UNSORTED;
+    HermitianTridiagEig( d, e, x, Z, ctrl );
     auto z = Z( IR(0), ALL );
     Matrix<Real> sqrtWeights( z ), sqrtWeightsTrans;
     for( Int j=0; j<n; ++j )
         sqrtWeights(0,j) = Sqrt(Real(2))*Abs(sqrtWeights(0,j));
-    herm_eig::Sort( x, sqrtWeights, ASCENDING );
+    auto sortPairs = TaggedSort( x, ASCENDING );
+    for( Int j=0; j<n; ++j )
+        x(j) = sortPairs[j].value;
+    ApplyTaggedSortToEachRow( sortPairs, sqrtWeights );
     Transpose( sqrtWeights, sqrtWeightsTrans );
 
     // Form the integral operator
@@ -57,7 +62,7 @@ void FoxLi( Matrix<Complex<Real>>& A, Int n, Real omega )
 template<typename Real>
 void FoxLi( ElementalMatrix<Complex<Real>>& APre, Int n, Real omega )
 {
-    DEBUG_ONLY(CSE cse("FoxLi"))
+    DEBUG_CSE
     typedef Complex<Real> C;
     const Real pi = 4*Atan( Real(1) );
     const C phi = Sqrt( C(0,omega/pi) ); 
@@ -79,13 +84,18 @@ void FoxLi( ElementalMatrix<Complex<Real>>& APre, Int n, Real omega )
     }
     DistMatrix<Real,VR,STAR> x(g);
     DistMatrix<Real,STAR,VR> Z(g);
-    HermitianTridiagEig( d, e, x, Z, UNSORTED );
+    HermitianTridiagEigCtrl<Real> ctrl;
+    ctrl.sort = UNSORTED;
+    HermitianTridiagEig( d, e, x, Z, ctrl );
     auto z = Z( IR(0), ALL );
     DistMatrix<Real,STAR,VR> sqrtWeights( z );
     auto& sqrtWeightsLoc = sqrtWeights.Matrix();
     for( Int jLoc=0; jLoc<sqrtWeights.LocalWidth(); ++jLoc )
         sqrtWeightsLoc(0,jLoc) = Sqrt(Real(2))*Abs(sqrtWeightsLoc(0,jLoc));
-    herm_eig::Sort( x, sqrtWeights, ASCENDING );
+    auto sortPairs = TaggedSort( x, ASCENDING );
+    for( Int j=0; j<n; ++j )
+        x.Set( j, 0, sortPairs[j].value );
+    ApplyTaggedSortToEachRow( sortPairs, sqrtWeights );
 
     // Form the integral operator
     A.Resize( n, n );
@@ -124,6 +134,10 @@ void FoxLi( ElementalMatrix<Complex<Real>>& APre, Int n, Real omega )
 
 #define EL_NO_INT_PROTO
 #define EL_NO_COMPLEX_PROTO
+#define EL_ENABLE_QUAD
+#define EL_ENABLE_DOUBLEDOUBLE
+#define EL_ENABLE_QUADDOUBLE
+#define EL_ENABLE_BIGFLOAT
 #include <El/macros/Instantiate.h>
 
 } // namespace El

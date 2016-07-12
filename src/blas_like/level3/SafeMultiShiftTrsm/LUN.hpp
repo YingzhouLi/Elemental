@@ -30,9 +30,9 @@ void LUNBlock
         Matrix<F>& X,
         Matrix<F>& scales )
 {
+    DEBUG_CSE
     typedef Base<F> Real;
     DEBUG_ONLY(
-      CSE cse("safemstrsm::LUNBlock");
       if( U.Height() != U.Width() )
           LogicError("Triangular matrix must be square");
       if( U.Width() != X.Height() )
@@ -218,10 +218,10 @@ void LUN
         Matrix<F>& X,
         Matrix<F>& scales ) 
 {
+    DEBUG_CSE
     typedef Base<F> Real;
 
     DEBUG_ONLY(
-      CSE cse("safemstrsm::LUN");
       if( U.Height() != U.Width() )
           LogicError("Triangular matrix must be square");
       if( U.Width() != X.Height() )
@@ -349,15 +349,15 @@ void LUN
 
 template<typename F>
 void LUN
-( const ElementalMatrix<F>& UPre, 
-  const ElementalMatrix<F>& shiftsPre,
-        ElementalMatrix<F>& XPre,
-        ElementalMatrix<F>& scalesPre ) 
+( const AbstractDistMatrix<F>& UPre, 
+  const AbstractDistMatrix<F>& shiftsPre,
+        AbstractDistMatrix<F>& XPre,
+        AbstractDistMatrix<F>& scalesPre ) 
 {
+    DEBUG_CSE
     typedef Base<F> Real;
   
     DEBUG_ONLY(
-      CSE cse("safemstrsm::LUN");
       if( UPre.Height() != UPre.Width() )
           LogicError("Triangular matrix must be square");
       if( UPre.Width() != XPre.Height() )

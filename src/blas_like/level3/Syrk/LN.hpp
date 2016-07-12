@@ -13,12 +13,12 @@ namespace syrk {
 template<typename T>
 void LN
 ( T alpha,
-  const ElementalMatrix<T>& APre, 
-        ElementalMatrix<T>& CPre,
+  const AbstractDistMatrix<T>& APre, 
+        AbstractDistMatrix<T>& CPre,
   bool conjugate=false )
 {
+    DEBUG_CSE
     DEBUG_ONLY(
-      CSE cse("syrk::LN");
       AssertSameGrids( APre, CPre );
       if( APre.Height() != CPre.Height() || APre.Height() != CPre.Width() )
           LogicError

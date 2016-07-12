@@ -351,14 +351,21 @@ Complex<BigFloat> Exp( const Complex<BigFloat>& alpha ) EL_NO_EXCEPT
 #ifdef EL_HAVE_QD
 DoubleDouble Pow( const DoubleDouble& alpha, const DoubleDouble& beta )
 { return pow(alpha,beta); }
+DoubleDouble Pow( const DoubleDouble& alpha, const int& beta )
+{ return pow(alpha,beta); }
 
 QuadDouble Pow( const QuadDouble& alpha, const QuadDouble& beta )
+{ return pow(alpha,beta); }
+QuadDouble Pow( const QuadDouble& alpha, const int& beta )
 { return pow(alpha,beta); }
 #endif
 
 #ifdef EL_HAVE_QUAD
 Quad Pow( const Quad& alpha, const Quad& beta )
 { return powq(alpha,beta); }
+
+Quad Pow( const Quad& alpha, const Int& beta )
+{ return powq(alpha,Quad(beta)); }
 
 Complex<Quad> Pow( const Complex<Quad>& alphaPre, const Complex<Quad>& betaPre )
 {
@@ -382,6 +389,11 @@ Complex<Quad> Pow( const Complex<Quad>& alphaPre, const Quad& betaPre )
 
     __complex128 gamma = cpowq(alpha,beta);
     return Complex<Quad>(crealq(gamma),cimagq(gamma));
+}
+
+Complex<Quad> Pow( const Complex<Quad>& alpha, const Int& beta )
+{
+    return Pow( alpha, Quad(beta) );
 }
 #endif
 

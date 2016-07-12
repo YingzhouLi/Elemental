@@ -363,6 +363,23 @@ BigFloat Abs( const Complex<BigFloat>& alpha ) EL_NO_EXCEPT;
 
 // Carefully avoid unnecessary overflow in an absolute value computation
 // ---------------------------------------------------------------------
+template<typename Real,typename=EnableIf<IsReal<Real>>>
+Real SafeNormAbs( const Real& chi0Abs, const Real& chi1Abs );
+template<typename Real,typename=EnableIf<IsReal<Real>>>
+Real SafeNorm( const Real& chi0, const Real& chi1 );
+template<typename Real,typename=EnableIf<IsReal<Real>>>
+Real SafeNorm( const Real& chi0, const Real& chi1, const Real& chi2 );
+template<typename Real,typename=EnableIf<IsReal<Real>>>
+Real SafeNorm
+( const Real& chi0, const Real& chi1, const Real& chi2, const Real& chi3 );
+
+template<typename Real>
+Real SafeNorm( const Real& chi0, const Complex<Real>& chi1 );
+template<typename Real>
+Real SafeNorm( const Complex<Real>& chi0, const Real& chi1 );
+template<typename Real>
+Real SafeNorm( const Complex<Real>& chi0, const Complex<Real>& chi1 );
+
 // Note: The real implementation is equivalent to Abs
 template<typename Real,typename=EnableIf<IsReal<Real>>>
 Real SafeAbs( const Real& alpha ) EL_NO_EXCEPT;
@@ -421,12 +438,12 @@ template<typename F,typename T,
          typename=EnableIf<IsStdScalar<F>>,
          typename=EnableIf<IsStdScalar<T>>>
 F Pow( const F& alpha, const T& beta );
+template<typename F,typename T,
+         typename=DisableIf<IsStdScalar<F>>,
+         typename=EnableIf<IsIntegral<T>>,
+         typename=void>
+F Pow( const F& alpha, const T& beta );
 
-// TODO: Disable this?!?
-#ifdef EL_USE_64BIT_INTS
-template<typename F,typename=EnableIf<IsScalar<F>>>
-F Pow( const F& alpha, const int& beta );
-#endif
 template<typename Real,
          typename=EnableIf<IsReal<Real>>,
          typename=DisableIf<IsStdScalar<Real>>>
@@ -439,13 +456,19 @@ Complex<Real> Pow( const Complex<Real>& alpha, const Real& beta );
 #ifdef EL_HAVE_QD
 DoubleDouble
 Pow( const DoubleDouble& alpha, const DoubleDouble& beta );
+DoubleDouble
+Pow( const DoubleDouble& alpha, const int& beta );
 QuadDouble
 Pow( const QuadDouble& alpha, const QuadDouble& beta );
+QuadDouble
+Pow( const QuadDouble& alpha, const int& beta );
 #endif
 #ifdef EL_HAVE_QUAD
 Quad Pow( const Quad& alpha, const Quad& beta );
+Quad Pow( const Quad& alpha, const Int& beta );
 Complex<Quad> Pow( const Complex<Quad>& alpha, const Complex<Quad>& beta );
 Complex<Quad> Pow( const Complex<Quad>& alpha, const Quad& beta );
+Complex<Quad> Pow( const Complex<Quad>& alpha, const Int& beta );
 #endif
 #ifdef EL_HAVE_MPC
 BigInt

@@ -19,7 +19,7 @@ void HermitianFunction
   Matrix<F>& A,
   function<Base<F>(Base<F>)> func )
 {
-    DEBUG_ONLY(CSE cse("HermitianFunction [Real]"))
+    DEBUG_CSE
     if( A.Height() != A.Width() )
         LogicError("Hermitian matrices must be square");
     typedef Base<F> Real;
@@ -42,7 +42,7 @@ void HermitianFunction
   ElementalMatrix<F>& APre,
   function<Base<F>(Base<F>)> func )
 {
-    DEBUG_ONLY(CSE cse("HermitianFunction [Real]"))
+    DEBUG_CSE
 
     DistMatrixReadWriteProxy<F,F,MC,MR> AProx( APre );
     auto& A = AProx.Get();
@@ -75,7 +75,7 @@ void HermitianFunction
   Matrix<Complex<Real>>& A, 
   function<Complex<Real>(Real)> func )
 {
-    DEBUG_ONLY(CSE cse("HermitianFunction [Complex]"))
+    DEBUG_CSE
     if( A.Height() != A.Width() )
         LogicError("Hermitian matrices must be square");
     typedef Complex<Real> C;
@@ -101,7 +101,7 @@ void HermitianFunction
   ElementalMatrix<Complex<Real>>& APre, 
   function<Complex<Real>(Real)> func )
 {
-    DEBUG_ONLY(CSE cse("HermitianFunction [Complex]"))
+    DEBUG_CSE
     typedef Complex<Real> C;
 
     DistMatrixReadWriteProxy<C,C,MC,MR> AProx( APre );
@@ -153,6 +153,10 @@ void HermitianFunction
     function<Complex<Real>(Real)> func );
 
 #define EL_NO_INT_PROTO
+#define EL_ENABLE_DOUBLEDOUBLE
+#define EL_ENABLE_QUADDOUBLE
+#define EL_ENABLE_QUAD
+#define EL_ENABLE_BIGFLOAT
 #include <El/macros/Instantiate.h>
 
 } // namespace El

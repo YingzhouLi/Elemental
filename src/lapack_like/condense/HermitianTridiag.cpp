@@ -19,7 +19,7 @@ void Ger2Sub
   const DistMatrix<F,MR,STAR>& y_MR,
         DistMatrix<F,MC,MR  >& A )
 {
-    DEBUG_ONLY(CSE cse("herm_tridiag::Ger2Sub"))
+    DEBUG_CSE
     const Int localHeight = A.LocalHeight();
     const Int localWidth = A.LocalWidth();
     const F* x_MC_Buf = x_MC.LockedBuffer();
@@ -51,37 +51,37 @@ void Ger2Sub
 namespace El {
 
 template<typename F>
-void HermitianTridiag( UpperOrLower uplo, Matrix<F>& A, Matrix<F>& t )
+void HermitianTridiag( UpperOrLower uplo, Matrix<F>& A, Matrix<F>& phase )
 {
-    DEBUG_ONLY(CSE cse("HermitianTridiag"))
+    DEBUG_CSE
     if( uplo == LOWER )
-        herm_tridiag::L( A, t );
+        herm_tridiag::L( A, phase );
     else
-        herm_tridiag::U( A, t );
+        herm_tridiag::U( A, phase );
 }
 
 template<typename F> 
 void HermitianTridiag
 ( UpperOrLower uplo,
   ElementalMatrix<F>& APre,
-  ElementalMatrix<F>& tPre,
+  ElementalMatrix<F>& phasePre,
   const HermitianTridiagCtrl<F>& ctrl )
 {
-    DEBUG_ONLY(CSE cse("HermitianTridiag"))
+    DEBUG_CSE
 
     DistMatrixReadWriteProxy<F,F,MC,MR> AProx( APre );
-    DistMatrixWriteProxy<F,F,STAR,STAR> tProx( tPre );
+    DistMatrixWriteProxy<F,F,STAR,STAR> phaseProx( phasePre );
     auto& A = AProx.Get();
-    auto& t = tProx.Get();
+    auto& phase = phaseProx.Get();
 
     const Grid& g = A.Grid();
     if( ctrl.approach == HERMITIAN_TRIDIAG_NORMAL )
     {
         // Use the pipelined algorithm for nonsquare meshes
         if( uplo == LOWER )
-            herm_tridiag::L( A, t, ctrl.symvCtrl );
+            herm_tridiag::L( A, phase, ctrl.symvCtrl );
         else
-            herm_tridiag::U( A, t, ctrl.symvCtrl );
+            herm_tridiag::U( A, phase, ctrl.symvCtrl );
     }
     else if( ctrl.approach == HERMITIAN_TRIDIAG_SQUARE )
     {
@@ -111,20 +111,20 @@ void HermitianTridiag
         mpi::Comm viewingComm = g.ViewingComm();
         const Grid squareGrid( viewingComm, squareGroup, pSqrt );
         DistMatrix<F> ASquare(squareGrid);
-        DistMatrix<F,STAR,STAR> tSquare(squareGrid);
+        DistMatrix<F,STAR,STAR> phaseSquare(squareGrid);
 
         // Perform the fast tridiagonalization on the square grid
         ASquare = A;
         if( ASquare.Participating() )
         {
             if( uplo == LOWER )
-                herm_tridiag::LSquare( ASquare, tSquare, ctrl.symvCtrl );
+                herm_tridiag::LSquare( ASquare, phaseSquare, ctrl.symvCtrl );
             else
-                herm_tridiag::USquare( ASquare, tSquare, ctrl.symvCtrl ); 
+                herm_tridiag::USquare( ASquare, phaseSquare, ctrl.symvCtrl );
         }
-        tSquare.MakeConsistent( true );
+        phaseSquare.MakeConsistent( true );
         A = ASquare;
-        t = tSquare;
+        phase = phaseSquare;
 
         mpi::Free( squareGroup );
     }
@@ -135,16 +135,16 @@ void HermitianTridiag
         if( g.Height() == g.Width() )
         {
             if( uplo == LOWER )
-                herm_tridiag::LSquare( A, t, ctrl.symvCtrl );
+                herm_tridiag::LSquare( A, phase, ctrl.symvCtrl );
             else
-                herm_tridiag::USquare( A, t, ctrl.symvCtrl ); 
+                herm_tridiag::USquare( A, phase, ctrl.symvCtrl ); 
         }
         else
         {
             if( uplo == LOWER )
-                herm_tridiag::L( A, t, ctrl.symvCtrl );
+                herm_tridiag::L( A, phase, ctrl.symvCtrl );
             else
-                herm_tridiag::U( A, t, ctrl.symvCtrl );
+                herm_tridiag::U( A, phase, ctrl.symvCtrl );
         }
     }
 }
@@ -154,9 +154,9 @@ namespace herm_tridiag {
 template<typename F>
 void ExplicitCondensed( UpperOrLower uplo, Matrix<F>& A )
 {
-    DEBUG_ONLY(CSE cse("herm_tridiag::ExplicitCondensed"))
-    Matrix<F> t;
-    HermitianTridiag( uplo, A, t );
+    DEBUG_CSE
+    Matrix<F> phase;
+    HermitianTridiag( uplo, A, phase );
     if( uplo == UPPER )
         MakeTrapezoidal( LOWER, A, 1 );
     else
@@ -169,9 +169,9 @@ void ExplicitCondensed
   ElementalMatrix<F>& A, 
   const HermitianTridiagCtrl<F>& ctrl )
 {
-    DEBUG_ONLY(CSE cse("herm_tridiag::ExplicitCondensed"))
-    DistMatrix<F,STAR,STAR> t(A.Grid());
-    HermitianTridiag( uplo, A, t, ctrl );
+    DEBUG_CSE
+    DistMatrix<F,STAR,STAR> phase(A.Grid());
+    HermitianTridiag( uplo, A, phase, ctrl );
     if( uplo == UPPER )
         MakeTrapezoidal( LOWER, A, 1 );
     else
@@ -184,11 +184,11 @@ void ExplicitCondensed
   template void HermitianTridiag \
   ( UpperOrLower uplo, \
     Matrix<F>& A, \
-    Matrix<F>& t ); \
+    Matrix<F>& phase ); \
   template void HermitianTridiag \
   ( UpperOrLower uplo, \
     ElementalMatrix<F>& A, \
-    ElementalMatrix<F>& t, \
+    ElementalMatrix<F>& phase, \
     const HermitianTridiagCtrl<F>& ctrl ); \
   template void herm_tridiag::ExplicitCondensed \
   ( UpperOrLower uplo, Matrix<F>& A ); \
@@ -201,14 +201,14 @@ void ExplicitCondensed
     UpperOrLower uplo, \
     Orientation orientation, \
     const Matrix<F>& A, \
-    const Matrix<F>& t, \
+    const Matrix<F>& phase, \
           Matrix<F>& B ); \
   template void herm_tridiag::ApplyQ \
   ( LeftOrRight side, \
     UpperOrLower uplo, \
     Orientation orientation, \
     const ElementalMatrix<F>& A, \
-    const ElementalMatrix<F>& t, \
+    const ElementalMatrix<F>& phase, \
           ElementalMatrix<F>& B );
 
 #define EL_NO_INT_PROTO

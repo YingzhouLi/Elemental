@@ -19,7 +19,7 @@ namespace El {
 template<typename F>
 PolarInfo Polar( Matrix<F>& A, const PolarCtrl& ctrl )
 {
-    DEBUG_ONLY(CSE cse("Polar"))
+    DEBUG_CSE
     PolarInfo info;
     if( ctrl.qdwh )
         info.qdwhInfo = polar::QDWH( A, ctrl.qdwhCtrl );
@@ -31,7 +31,7 @@ PolarInfo Polar( Matrix<F>& A, const PolarCtrl& ctrl )
 template<typename F>
 PolarInfo Polar( ElementalMatrix<F>& A, const PolarCtrl& ctrl )
 {
-    DEBUG_ONLY(CSE cse("Polar"))
+    DEBUG_CSE
     PolarInfo info;
     if( ctrl.qdwh )
         info.qdwhInfo = polar::QDWH( A, ctrl.qdwhCtrl );
@@ -43,7 +43,7 @@ PolarInfo Polar( ElementalMatrix<F>& A, const PolarCtrl& ctrl )
 template<typename F>
 PolarInfo Polar( Matrix<F>& A, Matrix<F>& P, const PolarCtrl& ctrl )
 {
-    DEBUG_ONLY(CSE cse("Polar"))
+    DEBUG_CSE
     PolarInfo info;
     if( ctrl.qdwh )
         info.qdwhInfo = polar::QDWH( A, P, ctrl.qdwhCtrl );
@@ -58,7 +58,7 @@ PolarInfo Polar
   ElementalMatrix<F>& P,
   const PolarCtrl& ctrl )
 {
-    DEBUG_ONLY(CSE cse("Polar"))
+    DEBUG_CSE
     PolarInfo info;
     if( ctrl.qdwh )
         info.qdwhInfo = polar::QDWH( A, P, ctrl.qdwhCtrl );
@@ -73,7 +73,7 @@ PolarInfo HermitianPolar
   Matrix<F>& A,
   const PolarCtrl& ctrl )
 {
-    DEBUG_ONLY(CSE cse("HermitianPolar"))
+    DEBUG_CSE
     PolarInfo info;
     if( ctrl.qdwh )
         info.qdwhInfo = herm_polar::QDWH( uplo, A, ctrl.qdwhCtrl );
@@ -88,7 +88,7 @@ PolarInfo HermitianPolar
   ElementalMatrix<F>& A,
   const PolarCtrl& ctrl )
 {
-    DEBUG_ONLY(CSE cse("HermitianPolar"))
+    DEBUG_CSE
     PolarInfo info;
     if( ctrl.qdwh )
         info.qdwhInfo = herm_polar::QDWH( uplo, A, ctrl.qdwhCtrl );
@@ -101,7 +101,7 @@ template<typename F>
 PolarInfo HermitianPolar
 ( UpperOrLower uplo, Matrix<F>& A, Matrix<F>& P, const PolarCtrl& ctrl )
 {
-    DEBUG_ONLY(CSE cse("HermitianPolar"))
+    DEBUG_CSE
     PolarInfo info;
     if( ctrl.qdwh )
         info.qdwhInfo = herm_polar::QDWH( uplo, A, P, ctrl.qdwhCtrl );
@@ -117,7 +117,7 @@ PolarInfo HermitianPolar
   ElementalMatrix<F>& P, 
   const PolarCtrl& ctrl )
 {
-    DEBUG_ONLY(CSE cse("HermitianPolar"))
+    DEBUG_CSE
     PolarInfo info;
     if( ctrl.qdwh )
         info.qdwhInfo = herm_polar::QDWH( uplo, A, P, ctrl.qdwhCtrl );
@@ -127,40 +127,44 @@ PolarInfo HermitianPolar
 }
 
 #define PROTO(F) \
-  template PolarInfo Polar \
-  ( Matrix<F>& A, \
+  template PolarInfo HermitianPolar \
+  ( UpperOrLower uplo, \
+    Matrix<F>& A, \
     const PolarCtrl& ctrl ); \
-  template PolarInfo Polar \
-  ( ElementalMatrix<F>& A, \
+  template PolarInfo HermitianPolar \
+  ( UpperOrLower uplo, \
+    ElementalMatrix<F>& A, \
     const PolarCtrl& ctrl ); \
-  template PolarInfo Polar \
-  ( Matrix<F>& A, \
+  template PolarInfo HermitianPolar \
+  ( UpperOrLower uplo, \
+    Matrix<F>& A, \
     Matrix<F>& P, \
     const PolarCtrl& ctrl ); \
-  template PolarInfo Polar \
-  ( ElementalMatrix<F>& A, \
+  template PolarInfo HermitianPolar \
+  ( UpperOrLower uplo, \
+    ElementalMatrix<F>& A, \
     ElementalMatrix<F>& P, \
     const PolarCtrl& ctrl ); \
-  template PolarInfo HermitianPolar \
-  ( UpperOrLower uplo, \
-    Matrix<F>& A, \
+  template PolarInfo Polar \
+  ( Matrix<F>& A, \
     const PolarCtrl& ctrl ); \
-  template PolarInfo HermitianPolar \
-  ( UpperOrLower uplo, \
-    ElementalMatrix<F>& A, \
+  template PolarInfo Polar \
+  ( ElementalMatrix<F>& A, \
     const PolarCtrl& ctrl ); \
-  template PolarInfo HermitianPolar \
-  ( UpperOrLower uplo, \
-    Matrix<F>& A, \
+  template PolarInfo Polar \
+  ( Matrix<F>& A, \
     Matrix<F>& P, \
     const PolarCtrl& ctrl ); \
-  template PolarInfo HermitianPolar \
-  ( UpperOrLower uplo, \
-    ElementalMatrix<F>& A, \
+  template PolarInfo Polar \
+  ( ElementalMatrix<F>& A, \
     ElementalMatrix<F>& P, \
     const PolarCtrl& ctrl );
 
 #define EL_NO_INT_PROTO
+#define EL_ENABLE_DOUBLEDOUBLE
+#define EL_ENABLE_QUADDOUBLE
+#define EL_ENABLE_QUAD
+#define EL_ENABLE_BIGFLOAT
 #include <El/macros/Instantiate.h>
 
 } // namespace El

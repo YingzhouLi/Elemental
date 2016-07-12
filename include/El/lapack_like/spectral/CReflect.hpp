@@ -11,6 +11,135 @@
 
 namespace El {
 
+/* HermitianEigSubset */
+inline ElHermitianEigSubset_s CReflect
+( const HermitianEigSubset<float>& subset )
+{
+    ElHermitianEigSubset_s subsetC;
+    subsetC.indexSubset = subset.indexSubset;
+    subsetC.lowerIndex = subset.lowerIndex;
+    subsetC.upperIndex = subset.upperIndex;
+    subsetC.rangeSubset = subset.rangeSubset;
+    subsetC.lowerBound = subset.lowerBound;
+    subsetC.upperBound = subset.upperBound;
+    return subsetC;
+}
+inline ElHermitianEigSubset_d CReflect
+( const HermitianEigSubset<double>& subset )
+{
+    ElHermitianEigSubset_d subsetC;
+    subsetC.indexSubset = subset.indexSubset;
+    subsetC.lowerIndex = subset.lowerIndex;
+    subsetC.upperIndex = subset.upperIndex;
+    subsetC.rangeSubset = subset.rangeSubset;
+    subsetC.lowerBound = subset.lowerBound;
+    subsetC.upperBound = subset.upperBound;
+    return subsetC;
+}
+
+inline HermitianEigSubset<float> CReflect
+( const ElHermitianEigSubset_s& subsetC )
+{
+    HermitianEigSubset<float> subset;
+    subset.indexSubset = subsetC.indexSubset;
+    subset.lowerIndex = subsetC.lowerIndex;
+    subset.upperIndex = subsetC.upperIndex;
+    subset.rangeSubset = subsetC.rangeSubset;
+    subset.lowerBound = subsetC.lowerBound;
+    subset.upperBound = subsetC.upperBound;
+    return subset;
+}
+inline HermitianEigSubset<double> CReflect
+( const ElHermitianEigSubset_d& subsetC )
+{
+    HermitianEigSubset<double> subset;
+    subset.indexSubset = subsetC.indexSubset;
+    subset.lowerIndex = subsetC.lowerIndex;
+    subset.upperIndex = subsetC.upperIndex;
+    subset.rangeSubset = subsetC.rangeSubset;
+    subset.lowerBound = subsetC.lowerBound;
+    subset.upperBound = subsetC.upperBound;
+    return subset;
+}
+
+/* herm_tridiag_eig::QRCtrl */
+inline ElHermitianTridiagEigQRCtrl CReflect
+( const herm_tridiag_eig::QRCtrl& ctrl )
+{
+    ElHermitianTridiagEigQRCtrl ctrlC;
+    ctrlC.maxIterPerEig = ctrl.maxIterPerEig;
+    ctrlC.demandConverged = ctrl.demandConverged;
+    ctrlC.fullAccuracyTwoByTwo = ctrl.fullAccuracyTwoByTwo;
+    return ctrlC;
+}
+
+inline herm_tridiag_eig::QRCtrl CReflect
+( const ElHermitianTridiagEigQRCtrl& ctrlC )
+{
+    herm_tridiag_eig::QRCtrl ctrl;
+    ctrl.maxIterPerEig = ctrlC.maxIterPerEig;
+    ctrl.demandConverged = ctrlC.demandConverged;
+    ctrl.fullAccuracyTwoByTwo = ctrlC.fullAccuracyTwoByTwo;
+    return ctrl;
+}
+
+/* HermitianTridiagEigCtrl */
+inline ElHermitianTridiagEigCtrl_s CReflect
+( const HermitianTridiagEigCtrl<float>& ctrl )
+{
+    ElHermitianTridiagEigCtrl_s ctrlC;
+    ctrlC.wantEigVecs = ctrl.wantEigVecs;
+    ctrlC.accumulateEigVecs = ctrl.accumulateEigVecs;
+    ctrlC.sort = CReflect(ctrl.sort);
+    ctrlC.subset = CReflect(ctrl.subset);
+    ctrlC.progress = ctrl.progress; 
+    ctrlC.useQR = ctrl.useQR;
+    ctrlC.qrCtrl = CReflect(ctrl.qrCtrl);
+    return ctrlC;
+}
+
+inline ElHermitianTridiagEigCtrl_d CReflect
+( const HermitianTridiagEigCtrl<double>& ctrl )
+{
+    ElHermitianTridiagEigCtrl_d ctrlC;
+    ctrlC.wantEigVecs = ctrl.wantEigVecs;
+    ctrlC.accumulateEigVecs = ctrl.accumulateEigVecs;
+    ctrlC.sort = CReflect(ctrl.sort);
+    ctrlC.subset = CReflect(ctrl.subset);
+    ctrlC.progress = ctrl.progress; 
+    ctrlC.useQR = ctrl.useQR;
+    ctrlC.qrCtrl = CReflect(ctrl.qrCtrl);
+    return ctrlC;
+}
+
+inline HermitianTridiagEigCtrl<float> CReflect
+( const ElHermitianTridiagEigCtrl_s& ctrlC )
+{
+    HermitianTridiagEigCtrl<float> ctrl;
+    ctrl.wantEigVecs = ctrlC.wantEigVecs;
+    ctrl.accumulateEigVecs = ctrlC.accumulateEigVecs;
+    ctrl.sort = CReflect(ctrlC.sort);
+    ctrl.subset = CReflect(ctrlC.subset);
+    ctrl.progress = ctrlC.progress; 
+    ctrl.useQR = ctrlC.useQR;
+    ctrl.qrCtrl = CReflect(ctrlC.qrCtrl);
+    return ctrl;
+}
+
+inline HermitianTridiagEigCtrl<double> CReflect
+( const ElHermitianTridiagEigCtrl_d& ctrlC )
+{
+    HermitianTridiagEigCtrl<double> ctrl;
+    ctrl.wantEigVecs = ctrlC.wantEigVecs;
+    ctrl.accumulateEigVecs = ctrlC.accumulateEigVecs;
+    ctrl.sort = CReflect(ctrlC.sort);
+    ctrl.subset = CReflect(ctrlC.subset);
+    ctrl.progress = ctrlC.progress; 
+    ctrl.useQR = ctrlC.useQR;
+    ctrl.qrCtrl = CReflect(ctrlC.qrCtrl);
+    return ctrl;
+}
+
 /* Pencil */
 inline ElPencil CReflect( Pencil pencil )
 { return static_cast<ElPencil>(pencil); }
@@ -65,62 +194,12 @@ inline HermitianSDCCtrl<double> CReflect( const ElHermitianSDCCtrl_d& ctrlC )
     return ctrl;
 }
 
-/* HermitianEigSubset */
-inline ElHermitianEigSubset_s CReflect
-( const HermitianEigSubset<float>& subset )
-{
-    ElHermitianEigSubset_s subsetC;
-    subsetC.indexSubset = subset.indexSubset;
-    subsetC.lowerIndex = subset.lowerIndex;
-    subsetC.upperIndex = subset.upperIndex;
-    subsetC.rangeSubset = subset.rangeSubset;
-    subsetC.lowerBound = subset.lowerBound;
-    subsetC.upperBound = subset.upperBound;
-    return subsetC;
-}
-inline ElHermitianEigSubset_d CReflect
-( const HermitianEigSubset<double>& subset )
-{
-    ElHermitianEigSubset_d subsetC;
-    subsetC.indexSubset = subset.indexSubset;
-    subsetC.lowerIndex = subset.lowerIndex;
-    subsetC.upperIndex = subset.upperIndex;
-    subsetC.rangeSubset = subset.rangeSubset;
-    subsetC.lowerBound = subset.lowerBound;
-    subsetC.upperBound = subset.upperBound;
-    return subsetC;
-}
-
-inline HermitianEigSubset<float> CReflect
-( const ElHermitianEigSubset_s& subsetC )
-{
-    HermitianEigSubset<float> subset;
-    subset.indexSubset = subsetC.indexSubset;
-    subset.lowerIndex = subsetC.lowerIndex;
-    subset.upperIndex = subsetC.upperIndex;
-    subset.rangeSubset = subsetC.rangeSubset;
-    subset.lowerBound = subsetC.lowerBound;
-    subset.upperBound = subsetC.upperBound;
-    return subset;
-}
-inline HermitianEigSubset<double> CReflect
-( const ElHermitianEigSubset_d& subsetC )
-{
-    HermitianEigSubset<double> subset;
-    subset.indexSubset = subsetC.indexSubset;
-    subset.lowerIndex = subsetC.lowerIndex;
-    subset.upperIndex = subsetC.upperIndex;
-    subset.rangeSubset = subsetC.rangeSubset;
-    subset.lowerBound = subsetC.lowerBound;
-    subset.upperBound = subsetC.upperBound;
-    return subset;
-}
-
 /* HermitianEigCtrl */
 inline ElHermitianEigCtrl_s CReflect( const HermitianEigCtrl<float>& ctrl )
 {
     ElHermitianEigCtrl_s ctrlC;
     ctrlC.tridiagCtrl = CReflect( ctrl.tridiagCtrl );
+    ctrlC.tridiagEigCtrl = CReflect( ctrl.tridiagEigCtrl );
     ctrlC.sdcCtrl = CReflect( ctrl.sdcCtrl );
     ctrlC.useSDC = ctrl.useSDC;
     return ctrlC;
@@ -130,6 +209,7 @@ inline ElHermitianEigCtrl_d CReflect( const HermitianEigCtrl<double>& ctrl )
 {
     ElHermitianEigCtrl_d ctrlC;
     ctrlC.tridiagCtrl = CReflect( ctrl.tridiagCtrl );
+    ctrlC.tridiagEigCtrl = CReflect( ctrl.tridiagEigCtrl );
     ctrlC.sdcCtrl = CReflect( ctrl.sdcCtrl );
     ctrlC.useSDC = ctrl.useSDC;
     return ctrlC;
@@ -139,6 +219,7 @@ CReflect( const HermitianEigCtrl<Complex<float>>& ctrl )
 {
     ElHermitianEigCtrl_c ctrlC;
     ctrlC.tridiagCtrl = CReflect( ctrl.tridiagCtrl );
+    ctrlC.tridiagEigCtrl = CReflect( ctrl.tridiagEigCtrl );
     ctrlC.sdcCtrl = CReflect( ctrl.sdcCtrl );
     ctrlC.useSDC = ctrl.useSDC;
     return ctrlC;
@@ -148,6 +229,7 @@ CReflect( const HermitianEigCtrl<Complex<double>>& ctrl )
 {
     ElHermitianEigCtrl_z ctrlC;
     ctrlC.tridiagCtrl = CReflect( ctrl.tridiagCtrl );
+    ctrlC.tridiagEigCtrl = CReflect( ctrl.tridiagEigCtrl );
     ctrlC.sdcCtrl = CReflect( ctrl.sdcCtrl );
     ctrlC.useSDC = ctrl.useSDC;
     return ctrlC;
@@ -157,6 +239,7 @@ inline HermitianEigCtrl<float> CReflect( const ElHermitianEigCtrl_s& ctrlC )
 {
     HermitianEigCtrl<float> ctrl;
     ctrl.tridiagCtrl = CReflect<float>( ctrlC.tridiagCtrl );
+    ctrl.tridiagEigCtrl = CReflect( ctrlC.tridiagEigCtrl );
     ctrl.sdcCtrl = CReflect( ctrlC.sdcCtrl );
     ctrl.useSDC = ctrlC.useSDC;
     return ctrl;
@@ -165,6 +248,7 @@ inline HermitianEigCtrl<double> CReflect( const ElHermitianEigCtrl_d& ctrlC )
 {
     HermitianEigCtrl<double> ctrl;
     ctrl.tridiagCtrl = CReflect<double>( ctrlC.tridiagCtrl );
+    ctrl.tridiagEigCtrl = CReflect( ctrlC.tridiagEigCtrl );
     ctrl.sdcCtrl = CReflect( ctrlC.sdcCtrl );
     ctrl.useSDC = ctrlC.useSDC;
     return ctrl;
@@ -174,6 +258,7 @@ CReflect( const ElHermitianEigCtrl_c& ctrlC )
 {
     HermitianEigCtrl<Complex<float>> ctrl;
     ctrl.tridiagCtrl = CReflect<Complex<float>>( ctrlC.tridiagCtrl );
+    ctrl.tridiagEigCtrl = CReflect( ctrlC.tridiagEigCtrl );
     ctrl.sdcCtrl = CReflect( ctrlC.sdcCtrl );
     ctrl.useSDC = ctrlC.useSDC;
     return ctrl;
@@ -183,6 +268,7 @@ CReflect( const ElHermitianEigCtrl_z& ctrlC )
 {
     HermitianEigCtrl<Complex<double>> ctrl;
     ctrl.tridiagCtrl = CReflect<Complex<double>>( ctrlC.tridiagCtrl );
+    ctrl.tridiagEigCtrl = CReflect( ctrlC.tridiagEigCtrl );
     ctrl.sdcCtrl = CReflect( ctrlC.sdcCtrl );
     ctrl.useSDC = ctrlC.useSDC;
     return ctrl;
@@ -256,86 +342,152 @@ inline PolarInfo CReflect( const ElPolarInfo& infoC )
     return info;
 }
 
-/* SVDCtrl */
+/* BidiagSVDQRCtrl */
 inline ElSVDApproach CReflect( SVDApproach approach )
 { return static_cast<ElSVDApproach>( approach ); }
 
 inline SVDApproach CReflect( ElSVDApproach approach )
 { return static_cast<SVDApproach>( approach ); }
 
-inline SVDCtrl<float> CReflect( const ElSVDCtrl_s& ctrlC )
-{
-    SVDCtrl<float> ctrl;
-    ctrl.approach = CReflect(ctrlC.approach);
-    ctrl.overwrite = ctrlC.overwrite;
-    ctrl.avoidComputingU = ctrlC.avoidComputingU;
-    ctrl.avoidComputingV = ctrlC.avoidComputingV;
-    ctrl.time = ctrlC.time;
-    ctrl.avoidLibflame = ctrlC.avoidLibflame;
+inline ElSingularValueToleranceType
+CReflect( SingularValueToleranceType tolType )
+{ return static_cast<ElSingularValueToleranceType>( tolType ); }
 
-    ctrl.seqQR = ctrlC.seqQR;
+inline SingularValueToleranceType
+CReflect( ElSingularValueToleranceType tolType )
+{ return static_cast<SingularValueToleranceType>( tolType ); }
+
+inline bidiag_svd::QRCtrl CReflect( const ElBidiagSVDQRCtrl& ctrlC )
+{
+    bidiag_svd::QRCtrl ctrl;
+    ctrl.maxIterPerVal = ctrlC.maxIterPerVal;
+    ctrl.demandConverged = ctrlC.demandConverged;
+    ctrl.looseMinSingValEst = ctrlC.looseMinSingValEst;
+    ctrl.useFLAME = ctrlC.useFLAME;
+    ctrl.useLAPACK = ctrlC.useLAPACK;
+    return ctrl;
+}
+
+inline ElBidiagSVDQRCtrl CReflect( const bidiag_svd::QRCtrl& ctrl )
+{
+    ElBidiagSVDQRCtrl ctrlC;
+    ctrlC.maxIterPerVal = ctrl.maxIterPerVal;
+    ctrlC.demandConverged = ctrl.demandConverged;
+    ctrlC.looseMinSingValEst = ctrl.looseMinSingValEst;
+    ctrlC.useFLAME = ctrl.useFLAME;
+    ctrlC.useLAPACK = ctrl.useLAPACK;
+    return ctrlC;
+}
+
+/* BidiagSVDCtrl */
+inline BidiagSVDCtrl<float> CReflect( const ElBidiagSVDCtrl_s& ctrlC )
+{
+    BidiagSVDCtrl<float> ctrl; 
+    ctrl.wantU = ctrlC.wantU;
+    ctrl.wantV = ctrlC.wantV;
+    ctrl.accumulateU = ctrlC.accumulateU;
+    ctrl.accumulateV = ctrlC.accumulateV;
+    ctrl.approach = CReflect(ctrlC.approach);
+    ctrl.tolType = CReflect(ctrlC.tolType);
+    ctrl.tol = ctrlC.tol;
+    ctrl.progress = ctrlC.progress;
+    ctrl.qrCtrl = CReflect(ctrlC.qrCtrl);
+    return ctrl;
+}
+
+inline BidiagSVDCtrl<double> CReflect( const ElBidiagSVDCtrl_d& ctrlC )
+{
+    BidiagSVDCtrl<double> ctrl; 
+    ctrl.wantU = ctrlC.wantU;
+    ctrl.wantV = ctrlC.wantV;
+    ctrl.accumulateU = ctrlC.accumulateU;
+    ctrl.accumulateV = ctrlC.accumulateV;
+    ctrl.approach = CReflect(ctrlC.approach);
+    ctrl.tolType = CReflect(ctrlC.tolType);
+    ctrl.tol = ctrlC.tol;
+    ctrl.progress = ctrlC.progress;
+    ctrl.qrCtrl = CReflect(ctrlC.qrCtrl);
+    return ctrl;
+}
+
+
+inline ElBidiagSVDCtrl_s CReflect( const BidiagSVDCtrl<float>& ctrl )
+{
+    ElBidiagSVDCtrl_s ctrlC; 
+    ctrlC.wantU = ctrl.wantU;
+    ctrlC.wantV = ctrl.wantV;
+    ctrlC.accumulateU = ctrl.accumulateU;
+    ctrlC.accumulateV = ctrl.accumulateV;
+    ctrlC.tolType = CReflect(ctrl.tolType);
+    ctrlC.tol = ctrl.tol;
+    ctrlC.progress = ctrl.progress;
+    ctrlC.qrCtrl = CReflect(ctrl.qrCtrl);
+    return ctrlC;
+}
+
+inline ElBidiagSVDCtrl_d CReflect( const BidiagSVDCtrl<double>& ctrl )
+{
+    ElBidiagSVDCtrl_d ctrlC; 
+    ctrlC.wantU = ctrl.wantU;
+    ctrlC.wantV = ctrl.wantV;
+    ctrlC.accumulateU = ctrl.accumulateU;
+    ctrlC.accumulateV = ctrl.accumulateV;
+    ctrlC.tolType = CReflect(ctrl.tolType);
+    ctrlC.tol = ctrl.tol;
+    ctrlC.progress = ctrl.progress;
+    ctrlC.qrCtrl = CReflect(ctrl.qrCtrl);
+    return ctrlC;
+}
+
+/* SVDCtrl */
+inline SVDCtrl<float> CReflect( const ElSVDCtrl_s& ctrlC )
+{ SVDCtrl<float> ctrl;
+    ctrl.overwrite = ctrlC.overwrite;
+    ctrl.time = ctrlC.time;
+    ctrl.useLAPACK = ctrlC.useLAPACK;
+    ctrl.useScaLAPACK = ctrlC.useScaLAPACK;
     ctrl.valChanRatio = ctrlC.valChanRatio;
     ctrl.fullChanRatio = ctrlC.fullChanRatio;
-    ctrl.relative = ctrlC.relative;
-    ctrl.tol = ctrlC.tol;
-
+    ctrl.bidiagSVDCtrl = CReflect(ctrlC.bidiagSVDCtrl);
     return ctrl;
 }
 
 inline SVDCtrl<double> CReflect( const ElSVDCtrl_d& ctrlC )
 {
     SVDCtrl<double> ctrl;
-    ctrl.approach = CReflect(ctrlC.approach);
     ctrl.overwrite = ctrlC.overwrite;
-    ctrl.avoidComputingU = ctrlC.avoidComputingU;
-    ctrl.avoidComputingV = ctrlC.avoidComputingV;
     ctrl.time = ctrlC.time;
-    ctrl.avoidLibflame = ctrlC.avoidLibflame;
-
-    ctrl.seqQR = ctrlC.seqQR;
+    ctrl.useLAPACK = ctrlC.useLAPACK;
+    ctrl.useScaLAPACK = ctrlC.useScaLAPACK;
     ctrl.valChanRatio = ctrlC.valChanRatio;
     ctrl.fullChanRatio = ctrlC.fullChanRatio;
-    ctrl.relative = ctrlC.relative;
-    ctrl.tol = ctrlC.tol;
-
+    ctrl.bidiagSVDCtrl = CReflect(ctrlC.bidiagSVDCtrl);
     return ctrl;
 }
 
 inline ElSVDCtrl_s CReflect( const SVDCtrl<float>& ctrl )
 {
     ElSVDCtrl_s ctrlC;
-    ctrlC.approach = CReflect(ctrl.approach);
     ctrlC.overwrite = ctrl.overwrite;
-    ctrlC.avoidComputingU = ctrl.avoidComputingU;
-    ctrlC.avoidComputingV = ctrl.avoidComputingV;
     ctrlC.time = ctrl.time;
-    ctrlC.avoidLibflame = ctrl.avoidLibflame;
-
-    ctrlC.seqQR = ctrl.seqQR;
+    ctrlC.useLAPACK = ctrl.useLAPACK;
+    ctrlC.useScaLAPACK = ctrl.useScaLAPACK;
     ctrlC.valChanRatio = ctrl.valChanRatio;
     ctrlC.fullChanRatio = ctrl.fullChanRatio;
-    ctrlC.relative = ctrl.relative;
-    ctrlC.tol = ctrl.tol;
-
+    ctrlC.bidiagSVDCtrl = CReflect(ctrl.bidiagSVDCtrl);
     return ctrlC;
 }
 
 inline ElSVDCtrl_d CReflect( const SVDCtrl<double>& ctrl )
 {
     ElSVDCtrl_d ctrlC;
-    ctrlC.approach = CReflect(ctrl.approach);
     ctrlC.overwrite = ctrl.overwrite;
-    ctrlC.avoidComputingU = ctrl.avoidComputingU;
-    ctrlC.avoidComputingV = ctrl.avoidComputingV;
     ctrlC.time = ctrl.time;
-    ctrlC.avoidLibflame = ctrl.avoidLibflame;
-
-    ctrlC.seqQR = ctrl.seqQR;
+    ctrlC.useLAPACK = ctrl.useLAPACK;
+    ctrlC.useScaLAPACK = ctrl.useScaLAPACK;
     ctrlC.valChanRatio = ctrl.valChanRatio;
     ctrlC.fullChanRatio = ctrl.fullChanRatio;
-    ctrlC.relative = ctrl.relative;
-    ctrlC.tol = ctrl.tol;
-
+    ctrlC.bidiagSVDCtrl = CReflect(ctrl.bidiagSVDCtrl);
     return ctrlC;
 }
 

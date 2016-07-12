@@ -24,8 +24,8 @@ void LocalAccumulateLLN
   const DistMatrix<T,STAR,MR  >& XTrans,
         DistMatrix<T,MC,  STAR>& Z )
 {
+    DEBUG_CSE
     DEBUG_ONLY(
-      CSE cse("trmm::LocalAccumulateLLN");
       AssertSameGrids( L, XTrans, Z );
       if( L.Height() != L.Width() ||
           L.Height() != XTrans.Width() ||
@@ -69,11 +69,11 @@ void LocalAccumulateLLN
 template<typename T>
 void LLNA
 ( UnitOrNonUnit diag, 
-  const ElementalMatrix<T>& LPre,
-        ElementalMatrix<T>& XPre )
+  const AbstractDistMatrix<T>& LPre,
+        AbstractDistMatrix<T>& XPre )
 {
+    DEBUG_CSE
     DEBUG_ONLY(
-      CSE cse("trmm::LLNA");
       AssertSameGrids( LPre, XPre );
       if( LPre.Height() != LPre.Width() || LPre.Width() != XPre.Height() )
           LogicError
@@ -116,11 +116,11 @@ void LLNA
 template<typename T>
 void LLNCOld
 ( UnitOrNonUnit diag, 
-  const ElementalMatrix<T>& LPre,
-        ElementalMatrix<T>& XPre )
+  const AbstractDistMatrix<T>& LPre,
+        AbstractDistMatrix<T>& XPre )
 {
+    DEBUG_CSE
     DEBUG_ONLY(
-      CSE cse("trmm::LLNCOld");
       AssertSameGrids( LPre, XPre );
       if( LPre.Height() != LPre.Width() || LPre.Width() != XPre.Height() )
           LogicError
@@ -177,11 +177,11 @@ void LLNCOld
 template<typename T>
 void LLNC
 ( UnitOrNonUnit diag, 
-  const ElementalMatrix<T>& LPre,
-        ElementalMatrix<T>& XPre )
+  const AbstractDistMatrix<T>& LPre,
+        AbstractDistMatrix<T>& XPre )
 {
+    DEBUG_CSE
     DEBUG_ONLY(
-      CSE cse("trmm::LLNC");
       AssertSameGrids( LPre, XPre );
       if( LPre.Height() != LPre.Width() || LPre.Width() != XPre.Height() )
           LogicError
@@ -233,10 +233,10 @@ void LLNC
 template<typename T>
 void LLN
 ( UnitOrNonUnit diag,
-  const ElementalMatrix<T>& L,
-        ElementalMatrix<T>& X )
+  const AbstractDistMatrix<T>& L,
+        AbstractDistMatrix<T>& X )
 {
-    DEBUG_ONLY(CSE cse("trmm::LLN"))
+    DEBUG_CSE
     // TODO: Come up with a better routing mechanism
     if( L.Height() > 5*X.Width() )
         LLNA( diag, L, X );

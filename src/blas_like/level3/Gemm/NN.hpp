@@ -14,12 +14,12 @@ namespace gemm {
 template<typename T>
 void Cannon_NN
 ( T alpha,
-  const ElementalMatrix<T>& APre,
-  const ElementalMatrix<T>& BPre,
-        ElementalMatrix<T>& CPre )
+  const AbstractDistMatrix<T>& APre,
+  const AbstractDistMatrix<T>& BPre,
+        AbstractDistMatrix<T>& CPre )
 {
+    DEBUG_CSE
     DEBUG_ONLY(
-      CSE cse("gemm::Cannon_NN");
       AssertSameGrids( APre, BPre, CPre );
       if( APre.Height() != CPre.Height() || BPre.Width() != CPre.Width() ||
           APre.Width() != BPre.Height() )
@@ -101,12 +101,12 @@ void Cannon_NN
 template<typename T>
 void SUMMA_NNA
 ( T alpha,
-  const ElementalMatrix<T>& APre, 
-  const ElementalMatrix<T>& BPre,
-        ElementalMatrix<T>& CPre )
+  const AbstractDistMatrix<T>& APre, 
+  const AbstractDistMatrix<T>& BPre,
+        AbstractDistMatrix<T>& CPre )
 {
+    DEBUG_CSE
     DEBUG_ONLY(
-      CSE cse("gemm::SUMMA_NNA");
       AssertSameGrids( APre, BPre, CPre );
       if( APre.Height() != CPre.Height() || BPre.Width() != CPre.Width() ||
           APre.Width() != BPre.Height() )
@@ -155,12 +155,12 @@ void SUMMA_NNA
 template<typename T>
 void SUMMA_NNB
 ( T alpha,
-  const ElementalMatrix<T>& APre,
-  const ElementalMatrix<T>& BPre,
-        ElementalMatrix<T>& CPre )
+  const AbstractDistMatrix<T>& APre,
+  const AbstractDistMatrix<T>& BPre,
+        AbstractDistMatrix<T>& CPre )
 {
+    DEBUG_CSE
     DEBUG_ONLY(
-      CSE cse("gemm::SUMMA_NNB");
       AssertSameGrids( APre, BPre, CPre );
       if( APre.Height() != CPre.Height() || BPre.Width() != CPre.Width() ||
           APre.Width() != BPre.Height() )
@@ -206,12 +206,12 @@ void SUMMA_NNB
 template<typename T>
 void SUMMA_NNC
 ( T alpha,
-  const ElementalMatrix<T>& APre,
-  const ElementalMatrix<T>& BPre,
-        ElementalMatrix<T>& CPre )
+  const AbstractDistMatrix<T>& APre,
+  const AbstractDistMatrix<T>& BPre,
+        AbstractDistMatrix<T>& CPre )
 {
+    DEBUG_CSE
     DEBUG_ONLY(
-      CSE cse("gemm::SUMMA_NNC");
       AssertSameGrids( APre, BPre, CPre );
       if( APre.Height() != CPre.Height() || BPre.Width() != CPre.Width() ||
           APre.Width() != BPre.Height() )
@@ -257,12 +257,12 @@ void SUMMA_NNC
 template<typename T>
 void SUMMA_NNDot
 ( T alpha,
-  const ElementalMatrix<T>& APre,
-  const ElementalMatrix<T>& BPre,
-        ElementalMatrix<T>& CPre )
+  const AbstractDistMatrix<T>& APre,
+  const AbstractDistMatrix<T>& BPre,
+        AbstractDistMatrix<T>& CPre )
 {
+    DEBUG_CSE
     DEBUG_ONLY(
-      CSE cse("gemm::SUMMA_NNDot");
       AssertSameGrids( APre, BPre, CPre );
       if( APre.Height() != CPre.Height() || BPre.Width() != CPre.Width() ||
           APre.Width() != BPre.Height() )
@@ -355,12 +355,12 @@ void SUMMA_NNDot
 template<typename T>
 void SUMMA_NN
 ( T alpha,
-  const ElementalMatrix<T>& A,
-  const ElementalMatrix<T>& B,
-        ElementalMatrix<T>& C,
+  const AbstractDistMatrix<T>& A,
+  const AbstractDistMatrix<T>& B,
+        AbstractDistMatrix<T>& C,
   GemmAlgorithm alg=GEMM_DEFAULT )
 {
-    DEBUG_ONLY(CSE cse("gemm::SUMMA_NN"))
+    DEBUG_CSE
     const Int m = C.Height();
     const Int n = C.Width();
     const Int sumDim = A.Width();

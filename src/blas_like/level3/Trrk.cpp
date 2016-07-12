@@ -25,7 +25,7 @@ void TrrkInternal
   T alpha, const Matrix<T>& A, const Matrix<T>& B,
   T beta,        Matrix<T>& C )
 {
-    DEBUG_ONLY(CSE cse("TrrkInternal"))
+    DEBUG_CSE
     ScaleTrapezoid( beta, uplo, C );
     if( orientA==NORMAL && orientB==NORMAL )
         trrk::TrrkNN( uplo, alpha, A, B, C );
@@ -45,7 +45,7 @@ void TrrkMKL
   T alpha, const Matrix<T>& A, const Matrix<T>& B,
   T beta,        Matrix<T>& C )
 {
-    DEBUG_ONLY(CSE cse("TrrkMKL"))
+    DEBUG_CSE
     const char uploChar = UpperOrLowerToChar( uplo );
     const char orientAChar = OrientationToChar( orientA );
     const char orientBChar = OrientationToChar( orientB );
@@ -67,7 +67,7 @@ void TrrkHelper
   T alpha, const Matrix<T>& A, const Matrix<T>& B,
   T beta,        Matrix<T>& C )
 {
-    DEBUG_ONLY(CSE cse("TrrkHelper"))
+    DEBUG_CSE
 #ifdef EL_HAVE_MKL_GEMMT
     TrrkMKL( uplo, orientA, orientB, alpha, A, B, beta, C );
 #else
@@ -82,7 +82,7 @@ void TrrkHelper
   T alpha, const Matrix<T>& A, const Matrix<T>& B,
   T beta,        Matrix<T>& C )
 {
-    DEBUG_ONLY(CSE cse("TrrkHelper"))
+    DEBUG_CSE
     TrrkInternal( uplo, orientA, orientB, alpha, A, B, beta, C );
 }
 
@@ -93,17 +93,17 @@ void Trrk
   T alpha, const Matrix<T>& A, const Matrix<T>& B,
   T beta,        Matrix<T>& C )
 {
-    DEBUG_ONLY(CSE cse("Trrk"))
+    DEBUG_CSE
     TrrkHelper( uplo, orientA, orientB, alpha, A, B, beta, C );
 }
 
 template<typename T>
 void Trrk
 ( UpperOrLower uplo, Orientation orientA, Orientation orientB,
-  T alpha, const ElementalMatrix<T>& A, const ElementalMatrix<T>& B,
-  T beta,        ElementalMatrix<T>& C )
+  T alpha, const AbstractDistMatrix<T>& A, const AbstractDistMatrix<T>& B,
+  T beta,        AbstractDistMatrix<T>& C )
 {
-    DEBUG_ONLY(CSE cse("Trrk"))
+    DEBUG_CSE
     ScaleTrapezoid( beta, uplo, C );
     if( orientA==NORMAL && orientB==NORMAL )
         trrk::TrrkNN( uplo, alpha, A, B, C );
@@ -125,9 +125,9 @@ void Trrk
   template void Trrk \
   ( UpperOrLower uplo, \
     Orientation orientA, Orientation orientB, \
-    T alpha, const ElementalMatrix<T>& A, \
-             const ElementalMatrix<T>& B, \
-    T beta,        ElementalMatrix<T>& C ); \
+    T alpha, const AbstractDistMatrix<T>& A, \
+             const AbstractDistMatrix<T>& B, \
+    T beta,        AbstractDistMatrix<T>& C ); \
   template void LocalTrrk \
    ( UpperOrLower uplo, \
      T alpha, const DistMatrix<T,MC,  STAR>& A, \

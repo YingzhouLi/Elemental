@@ -13,7 +13,7 @@ namespace El {
 template<typename T>
 T Trace( const Matrix<T>& A )
 {
-    DEBUG_ONLY(CSE cse("Trace"))
+    DEBUG_CSE
     if( A.Height() != A.Width() )
         LogicError("Cannot compute trace of nonsquare matrix");
 
@@ -29,7 +29,7 @@ T Trace( const Matrix<T>& A )
 template<typename T> 
 T Trace( const AbstractDistMatrix<T>& A )
 {
-    DEBUG_ONLY(CSE cse("Trace"))
+    DEBUG_CSE
     if( A.Height() != A.Width() )
         LogicError("Cannot compute trace of nonsquare matrix");
 
@@ -56,6 +56,8 @@ T Trace( const AbstractDistMatrix<T>& A )
   template T Trace( const Matrix<T>& A ); \
   template T Trace( const AbstractDistMatrix<T>& A );
 
+#define EL_ENABLE_DOUBLEDOUBLE
+#define EL_ENABLE_QUADDOUBLE
 #define EL_ENABLE_QUAD
 #define EL_ENABLE_BIGFLOAT
 #include <El/macros/Instantiate.h>

@@ -28,7 +28,7 @@ LN
   const Matrix<F>& shifts,
         Matrix<F>& X ) 
 {
-    DEBUG_ONLY(CSE cse("mshs::LN"))
+    DEBUG_CSE
     X *= alpha;
 
     const Int m = X.Height();
@@ -61,7 +61,7 @@ LN
             //   | c        s | | H(k,k)   | = | gamma |
             //   | -conj(s) c | | H(k,k+1) |   | 0     |
             Real c; F s;
-            lapack::Givens( W(k,j), etakkp1, c, s );
+            Givens( W(k,j), etakkp1, c, s );
             C(k,j) = c;
             S(k,j) = s;
 
@@ -125,7 +125,7 @@ UN
   const Matrix<F>& shifts,
         Matrix<F>& X ) 
 {
-    DEBUG_ONLY(CSE cse("mshs::UN"))
+    DEBUG_CSE
     X *= alpha;
 
     const Int m = X.Height();
@@ -158,7 +158,7 @@ UN
             //   | c        s | | H(k,k)   | = | gamma |
             //   | -conj(s) c | | H(k,k-1) |   | 0     |
             Real c; F s;
-            lapack::Givens( W(k,j), etakkm1, c, s );
+            Givens( W(k,j), etakkm1, c, s );
             C(k,j) = c;
             S(k,j) = s;
 
@@ -224,7 +224,7 @@ LN
   const ElementalMatrix<F>& shiftsPre,
         ElementalMatrix<F>& XPre ) 
 {
-    DEBUG_ONLY(CSE cse("mshs::LN"))
+    DEBUG_CSE
 
     DistMatrixReadWriteProxy<F,F,STAR,VR> XProx( XPre );
     auto& X = XProx.Get();
@@ -279,7 +279,7 @@ LN
             //   | c        s | | H(k,k)   | = | gamma |
             //   | -conj(s) c | | H(k,k+1) |   | 0     |
             Real c; F s;
-            lapack::Givens( W(k,jLoc), etakkp1, c, s );
+            Givens( W(k,jLoc), etakkp1, c, s );
             C(k,jLoc) = c;
             S(k,jLoc) = s;
 
@@ -346,7 +346,7 @@ UN
   const ElementalMatrix<F>& shiftsPre,
         ElementalMatrix<F>& XPre ) 
 {
-    DEBUG_ONLY(CSE cse("mshs::UN"))
+    DEBUG_CSE
 
     DistMatrixReadWriteProxy<F,F,STAR,VR> XProx( XPre );
     auto& X = XProx.Get();
@@ -401,7 +401,7 @@ UN
             //   | c        s | | H(k,k)   | = | gamma |
             //   | -conj(s) c | | H(k,k-1) |   | 0     |
             Real c; F s;
-            lapack::Givens( W(k,jLoc), etakkm1, c, s );
+            Givens( W(k,jLoc), etakkm1, c, s );
             C(k,jLoc) = c;
             S(k,jLoc) = s;
 
@@ -469,7 +469,7 @@ void MultiShiftHessSolve
   const Matrix<F>& shifts,
         Matrix<F>& X )
 {
-    DEBUG_ONLY(CSE cse("MultiShiftHessSolve"))
+    DEBUG_CSE
     if( uplo == LOWER )
     {
         if( orientation == NORMAL )
@@ -495,7 +495,7 @@ void MultiShiftHessSolve
   const ElementalMatrix<F>& shifts, 
         ElementalMatrix<F>& X )
 {
-    DEBUG_ONLY(CSE cse("MultiShiftHessSolve"))
+    DEBUG_CSE
     if( uplo == LOWER )
     {
         if( orientation == NORMAL )

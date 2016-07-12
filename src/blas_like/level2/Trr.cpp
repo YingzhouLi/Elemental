@@ -21,8 +21,8 @@ void Trr
         Matrix<T>& A, 
   bool conjugate )
 {
+    DEBUG_CSE
     DEBUG_ONLY(
-      CSE cse("Trr");
       if( x.Width() != 1 || y.Width() != 1 )
           LogicError("x and y must be of width 1");
     )
@@ -64,13 +64,13 @@ template<typename T>
 void Trr
 ( UpperOrLower uplo,
   T alpha,
-  const ElementalMatrix<T>& x, 
-  const ElementalMatrix<T>& y,
-        ElementalMatrix<T>& APre,
+  const AbstractDistMatrix<T>& x, 
+  const AbstractDistMatrix<T>& y,
+        AbstractDistMatrix<T>& APre,
   bool conjugate )
 {
+    DEBUG_CSE
     DEBUG_ONLY(
-      CSE cse("Trr");
       if( x.Width() != 1 || y.Width() != 1 )
           LogicError("x and y must be of width 1");
     )
@@ -137,8 +137,8 @@ void Trr
     Matrix<T>& A, bool conjugate ); \
   template void Trr \
   ( UpperOrLower uplo, \
-    T alpha, const ElementalMatrix<T>& x, const ElementalMatrix<T>& y, \
-    ElementalMatrix<T>& A, bool conjugate );
+    T alpha, const AbstractDistMatrix<T>& x, const AbstractDistMatrix<T>& y, \
+    AbstractDistMatrix<T>& A, bool conjugate );
 
 #define EL_ENABLE_DOUBLEDOUBLE
 #define EL_ENABLE_QUADDOUBLE

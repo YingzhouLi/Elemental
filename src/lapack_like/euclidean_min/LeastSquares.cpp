@@ -19,22 +19,22 @@ void Overwrite
   const Matrix<F>& B, 
         Matrix<F>& X )
 {
-    DEBUG_ONLY(CSE cse("ls::Overwrite"))
+    DEBUG_CSE
 
-    Matrix<F> t;
-    Matrix<Base<F>> d;
+    Matrix<F> phase;
+    Matrix<Base<F>> signature;
 
     const Int m = A.Height();
     const Int n = A.Width();
     if( m >= n )
     {
-        QR( A, t, d );
-        qr::SolveAfter( orientation, A, t, d, B, X );
+        QR( A, phase, signature );
+        qr::SolveAfter( orientation, A, phase, signature, B, X );
     }
     else
     {
-        LQ( A, t, d );
-        lq::SolveAfter( orientation, A, t, d, B, X );
+        LQ( A, phase, signature );
+        lq::SolveAfter( orientation, A, phase, signature, B, X );
     }
 }
 
@@ -45,25 +45,25 @@ void Overwrite
   const ElementalMatrix<F>& B, 
         ElementalMatrix<F>& X )
 {
-    DEBUG_ONLY(CSE cse("ls::Overwrite"))
+    DEBUG_CSE
 
     DistMatrixReadProxy<F,F,MC,MR> AProx( APre );
     auto& A = AProx.Get();
 
-    DistMatrix<F,MD,STAR> t(A.Grid());
-    DistMatrix<Base<F>,MD,STAR> d(A.Grid());
+    DistMatrix<F,MD,STAR> phase(A.Grid());
+    DistMatrix<Base<F>,MD,STAR> signature(A.Grid());
 
     const Int m = A.Height();
     const Int n = A.Width();
     if( m >= n )
     {
-        QR( A, t, d );
-        qr::SolveAfter( orientation, A, t, d, B, X );
+        QR( A, phase, signature );
+        qr::SolveAfter( orientation, A, phase, signature, B, X );
     }
     else
     {
-        LQ( A, t, d );
-        lq::SolveAfter( orientation, A, t, d, B, X );
+        LQ( A, phase, signature );
+        lq::SolveAfter( orientation, A, phase, signature, B, X );
     }
 }
 
@@ -76,7 +76,7 @@ void LeastSquares
   const Matrix<F>& B, 
         Matrix<F>& X )
 {
-    DEBUG_ONLY(CSE cse("LeastSquares"))
+    DEBUG_CSE
     Matrix<F> ACopy( A );
     ls::Overwrite( orientation, ACopy, B, X );
 }
@@ -88,7 +88,7 @@ void LeastSquares
   const ElementalMatrix<F>& B, 
         ElementalMatrix<F>& X )
 {
-    DEBUG_ONLY(CSE cse("LeastSquares"))
+    DEBUG_CSE
     DistMatrix<F> ACopy( A );
     ls::Overwrite( orientation, ACopy, B, X ); 
 }
@@ -159,8 +159,8 @@ void Equilibrated
         Base<F> alpha,
   const RegSolveCtrl<Base<F>>& ctrl )
 {
+    DEBUG_CSE
     DEBUG_ONLY(
-      CSE cse("ls::Equilibrated");
       if( A.Height() != B.Height() )
           LogicError("Heights of A and B must match");
     )
@@ -273,7 +273,7 @@ void LeastSquares
         Matrix<F>& X,
   const LeastSquaresCtrl<Base<F>>& ctrl )
 {
-    DEBUG_ONLY(CSE cse("LeastSquares"))
+    DEBUG_CSE
     typedef Base<F> Real;
 
     SparseMatrix<F> ABar;
@@ -349,8 +349,8 @@ void Equilibrated
   const RegSolveCtrl<Base<F>>& ctrl,
   bool time )
 {
+    DEBUG_CSE
     DEBUG_ONLY(
-      CSE cse("ls::Equilibrated");
       if( A.Height() != B.Height() )
           LogicError("Heights of A and B must match");
     )
@@ -498,7 +498,7 @@ void LeastSquares
         DistMultiVec<F>& X,
   const LeastSquaresCtrl<Base<F>>& ctrl )
 {
-    DEBUG_ONLY(CSE cse("LeastSquares"))
+    DEBUG_CSE
     typedef Base<F> Real;
     mpi::Comm comm = A.Comm();
     const int commRank = mpi::Rank(comm);

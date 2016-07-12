@@ -13,12 +13,12 @@ namespace syrk {
 template<typename T>
 void UT
 ( T alpha,
-  const ElementalMatrix<T>& APre, 
-        ElementalMatrix<T>& CPre,
+  const AbstractDistMatrix<T>& APre, 
+        AbstractDistMatrix<T>& CPre,
   bool conjugate=false )
 {
+    DEBUG_CSE
     DEBUG_ONLY(
-      CSE cse("syrk::UT");
       AssertSameGrids( APre, CPre );
       if( APre.Width() != CPre.Height() || APre.Width() != CPre.Width() )
           LogicError

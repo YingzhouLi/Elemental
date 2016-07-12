@@ -15,12 +15,12 @@ template<typename T>
 void SUMMA_TNA
 ( Orientation orientA,
   T alpha,
-  const ElementalMatrix<T>& APre,
-  const ElementalMatrix<T>& BPre,
-        ElementalMatrix<T>& CPre )
+  const AbstractDistMatrix<T>& APre,
+  const AbstractDistMatrix<T>& BPre,
+        AbstractDistMatrix<T>& CPre )
 {
+    DEBUG_CSE
     DEBUG_ONLY(
-      CSE cse("gemm::SUMMA_TNA");    
       AssertSameGrids( APre, BPre, CPre );
       if( orientA == NORMAL )
           LogicError("A must be (Conjugate)Transposed");
@@ -72,12 +72,12 @@ template<typename T>
 void SUMMA_TNB
 ( Orientation orientA,
   T alpha,
-  const ElementalMatrix<T>& APre,
-  const ElementalMatrix<T>& BPre,
-        ElementalMatrix<T>& CPre )
+  const AbstractDistMatrix<T>& APre,
+  const AbstractDistMatrix<T>& BPre,
+        AbstractDistMatrix<T>& CPre )
 {
+    DEBUG_CSE
     DEBUG_ONLY(
-      CSE cse("gemm::SUMMA_TNB");
       AssertSameGrids( APre, BPre, CPre );
       if( orientA == NORMAL )
           LogicError("A must be (Conjugate)Transposed");
@@ -126,12 +126,12 @@ template<typename T>
 void SUMMA_TNC
 ( Orientation orientA,
   T alpha,
-  const ElementalMatrix<T>& APre,
-  const ElementalMatrix<T>& BPre,
-        ElementalMatrix<T>& CPre )
+  const AbstractDistMatrix<T>& APre,
+  const AbstractDistMatrix<T>& BPre,
+        AbstractDistMatrix<T>& CPre )
 {
+    DEBUG_CSE
     DEBUG_ONLY(
-      CSE cse("gemm::SUMMA_TNC");
       AssertSameGrids( APre, BPre, CPre );
       if( orientA == NORMAL )
           LogicError("A must be (Conjugate)Transposed");
@@ -179,12 +179,12 @@ template<typename T>
 void SUMMA_TN
 ( Orientation orientA,
   T alpha,
-  const ElementalMatrix<T>& A,
-  const ElementalMatrix<T>& B,
-        ElementalMatrix<T>& C,
+  const AbstractDistMatrix<T>& A,
+  const AbstractDistMatrix<T>& B,
+        AbstractDistMatrix<T>& C,
   GemmAlgorithm alg=GEMM_DEFAULT )
 {
-    DEBUG_ONLY(CSE cse("gemm::SUMMA_TN"))
+    DEBUG_CSE
     const Int m = C.Height();
     const Int n = C.Width();
     const Int k = A.Height();

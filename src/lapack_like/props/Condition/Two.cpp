@@ -13,7 +13,7 @@ namespace El {
 template<typename F> 
 Base<F> TwoCondition( const Matrix<F>& A )
 {
-    DEBUG_ONLY(CSE cse("TwoCondition"))
+    DEBUG_CSE
     typedef Base<F> Real;
     Matrix<Real> s;
     SVD( A, s );
@@ -28,7 +28,7 @@ Base<F> TwoCondition( const Matrix<F>& A )
 template<typename F> 
 Base<F> TwoCondition( const ElementalMatrix<F>& A )
 {
-    DEBUG_ONLY(CSE cse("TwoCondition"))
+    DEBUG_CSE
     typedef Base<F> Real;
     DistMatrix<Real,VR,STAR> s( A.Grid() );
     SVD( A, s );
@@ -45,6 +45,10 @@ Base<F> TwoCondition( const ElementalMatrix<F>& A )
   template Base<F> TwoCondition( const ElementalMatrix<F>& A );
 
 #define EL_NO_INT_PROTO
+#define EL_ENABLE_DOUBLEDOUBLE
+#define EL_ENABLE_QUADDOUBLE
+#define EL_ENABLE_QUAD
+#define EL_ENABLE_BIGFLOAT
 #include <El/macros/Instantiate.h>
 
 } // namespace El
