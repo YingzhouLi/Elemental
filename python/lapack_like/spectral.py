@@ -11,8 +11,62 @@ from ..blas_like import Copy, EntrywiseMap
 from ..io import ProcessEvents
 import ctypes
 
+# Cubic secular
+# =============
+class CubicSecularCtrl(ctypes.Structure):
+  _fields_ = [("maxIterations",iType),
+              ("negativeFix",c_uint)]
+  def __init__(self):
+    lib.ElCubicSecularCtrlDefault(pointer(self))
+
+# Secular EVD
+# ===========
+class SecularEVDCtrl_s(ctypes.Structure):
+  _fields_ = [("maxIterations",iType),
+              ("sufficientDecay",sType),
+              ("negativeFix",c_uint),
+              ("penalizeDerivative",bType),
+              ("progress",bType),
+              ("cubicCtrl",CubicSecularCtrl)]
+  def __init__(self):
+    lib.ElSecularEVDCtrlDefault_s(pointer(self))
+
+class SecularEVDCtrl_d(ctypes.Structure):
+  _fields_ = [("maxIterations",iType),
+              ("sufficientDecay",dType),
+              ("negativeFix",c_uint),
+              ("penalizeDerivative",bType),
+              ("progress",bType),
+              ("cubicCtrl",CubicSecularCtrl)]
+  def __init__(self):
+    lib.ElSecularEVDCtrlDefault_d(pointer(self))
+
+# Secular SVD
+# ===========
+class SecularSVDCtrl_s(ctypes.Structure):
+  _fields_ = [("maxIterations",iType),
+              ("sufficientDecay",sType),
+              ("negativeFix",c_uint),
+              ("penalizeDerivative",bType),
+              ("progress",bType),
+              ("cubicCtrl",CubicSecularCtrl)]
+  def __init__(self):
+    lib.ElSecularSVDCtrlDefault_s(pointer(self))
+
+class SecularSVDCtrl_d(ctypes.Structure):
+  _fields_ = [("maxIterations",iType),
+              ("sufficientDecay",dType),
+              ("negativeFix",c_uint),
+              ("penalizeDerivative",bType),
+              ("progress",bType),
+              ("cubicCtrl",CubicSecularCtrl)]
+  def __init__(self):
+    lib.ElSecularSVDCtrlDefault_d(pointer(self))
+
 # Hermitian tridiagonal eigensolvers
 # ==================================
+(HERM_TRIDIAG_EIG_QR,HERM_TRIDIAG_EIG_DC,HERM_TRIDIAG_EIG_MRRR)=(0,1,2)
+
 class HermitianEigSubset_s(ctypes.Structure):
   _fields_ = [("indexSubset",bType),
               ("lowerIndex",iType),("upperIndex",iType),
@@ -23,6 +77,22 @@ class HermitianEigSubset_d(ctypes.Structure):
               ("lowerIndex",iType),("upperIndex",iType),
               ("rangeSubset",bType),
               ("lowerBound",dType),("upperBound",dType)]
+
+class HermitianTridiagEigDCCtrl_s(ctypes.Structure):
+  _fields_ = [("secularCtrl",SecularEVDCtrl_s),
+              ("deflationFudge",sType),
+              ("cutoff",iType),
+              ("exploitStructure",bType)]
+  def __init__(self):
+    lib.ElHermitianTridiagEigDCCtrlDefault_s(pointer(self))
+
+class HermitianTridiagEigDCCtrl_d(ctypes.Structure):
+  _fields_ = [("secularCtrl",SecularEVDCtrl_d),
+              ("deflationFudge",dType),
+              ("cutoff",iType),
+              ("exploitStructure",bType)]
+  def __init__(self):
+    lib.ElHermitianTridiagEigDCCtrlDefault_d(pointer(self))
 
 lib.ElHermitianTridiagEig_s.argtypes = \
 lib.ElHermitianTridiagEig_d.argtypes = \
@@ -667,6 +737,8 @@ def Eig(A):
  RELATIVE_TO_MAX_SING_VAL_TOL,
  RELATIVE_TO_SELF_SING_VAL_TOL)=(0,1,2)
 
+(FLIP_NEGATIVES,CLIP_NEGATIVES)=(0,1)
+
 class BidiagSVDQRCtrl(ctypes.Structure):
   _fields_ = [("maxIterPerVal",iType),
               ("demandConverged",bType),
@@ -675,6 +747,22 @@ class BidiagSVDQRCtrl(ctypes.Structure):
               ("useLAPACK",bType)]
   def __init__(self):
     lib.ElBidiagSVDQRCtrlDefault(pointer(self))
+
+class BidiagSVDDCCtrl_s(ctypes.Structure):
+  _fields_ = [("secularCtrl",SecularSVDCtrl_s),
+              ("deflationFudge",sType),
+              ("cutoff",iType),
+              ("exploitStructure",bType)]
+  def __init__(self):
+    lib.ElBidiagSVDDCCtrlDefault_s(pointer(self))
+
+class BidiagSVDDCCtrl_d(ctypes.Structure):
+  _fields_ = [("secularCtrl",SecularSVDCtrl_d),
+              ("deflationFudge",dType),
+              ("cutoff",iType),
+              ("exploitStructure",bType)]
+  def __init__(self):
+    lib.ElBidiagSVDDCCtrlDefault_d(pointer(self))
 
 class BidiagSVDCtrl_s(ctypes.Structure):
   _fields_ = [("wantU",bType),
@@ -685,7 +773,9 @@ class BidiagSVDCtrl_s(ctypes.Structure):
               ("tolType",c_uint),
               ("tol",sType),
               ("progress",bType),
-              ("qrCtrl",BidiagSVDQRCtrl)]
+              ("useQR",bType),
+              ("qrCtrl",BidiagSVDQRCtrl),
+              ("dcCtrl",BidiagSVDDCCtrl_s)]
   def __init__(self):
     lib.ElBidiagSVDCtrlDefault_s(pointer(self))
 
@@ -698,7 +788,9 @@ class BidiagSVDCtrl_d(ctypes.Structure):
               ("tolType",c_uint),
               ("tol",dType),
               ("progress",bType),
-              ("qrCtrl",BidiagSVDQRCtrl)]
+              ("useQR",bType),
+              ("qrCtrl",BidiagSVDQRCtrl),
+              ("dcCtrl",BidiagSVDDCCtrl_d)]
   def __init__(self):
     lib.ElBidiagSVDCtrlDefault_d(pointer(self))
 

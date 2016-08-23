@@ -11,6 +11,144 @@
 
 namespace El {
 
+/* Cubic secular */
+inline ElFlipOrClip CReflect( FlipOrClip negativeFix )
+{ return static_cast<ElFlipOrClip>(negativeFix); }
+
+inline FlipOrClip CReflect( ElFlipOrClip negativeFix )
+{ return static_cast<FlipOrClip>(negativeFix); }
+
+inline ElCubicSecularCtrl CReflect( const CubicSecularCtrl& ctrl )
+{
+    ElCubicSecularCtrl ctrlC;
+    ctrlC.maxIterations = ctrl.maxIterations;
+    ctrlC.negativeFix = CReflect( ctrl.negativeFix );
+    return ctrlC;
+}
+
+inline CubicSecularCtrl CReflect( const ElCubicSecularCtrl& ctrlC )
+{
+    CubicSecularCtrl ctrl;
+    ctrl.maxIterations = ctrlC.maxIterations;
+    ctrl.negativeFix = CReflect( ctrlC.negativeFix );
+    return ctrl;
+}
+
+/* Secular EVD */
+inline ElSecularEVDCtrl_s
+CReflect( const SecularEVDCtrl<float>& ctrl )
+{
+    ElSecularEVDCtrl_s ctrlC;
+    ctrlC.maxIterations = ctrl.maxIterations;
+    ctrlC.sufficientDecay = ctrl.sufficientDecay;
+    ctrlC.negativeFix = CReflect( ctrl.negativeFix );
+    ctrlC.penalizeDerivative = CReflect( ctrl.penalizeDerivative );
+    ctrlC.progress = ctrl.progress;
+    ctrlC.cubicCtrl = CReflect( ctrl.cubicCtrl );
+    return ctrlC;
+}
+
+inline ElSecularEVDCtrl_d
+CReflect( const SecularEVDCtrl<double>& ctrl )
+{
+    ElSecularEVDCtrl_d ctrlC;
+    ctrlC.maxIterations = ctrl.maxIterations;
+    ctrlC.sufficientDecay = ctrl.sufficientDecay;
+    ctrlC.negativeFix = CReflect( ctrl.negativeFix );
+    ctrlC.penalizeDerivative = CReflect( ctrl.penalizeDerivative );
+    ctrlC.progress = ctrl.progress;
+    ctrlC.cubicCtrl = CReflect( ctrl.cubicCtrl );
+    return ctrlC;
+}
+
+inline SecularEVDCtrl<float>
+CReflect( const ElSecularEVDCtrl_s& ctrlC )
+{
+    SecularEVDCtrl<float> ctrl;
+    ctrl.maxIterations = ctrlC.maxIterations;
+    ctrl.sufficientDecay = ctrlC.sufficientDecay;
+    ctrl.negativeFix = CReflect( ctrlC.negativeFix );
+    ctrl.penalizeDerivative = CReflect( ctrlC.penalizeDerivative );
+    ctrl.progress = ctrlC.progress;
+    ctrl.cubicCtrl = CReflect( ctrlC.cubicCtrl );
+    return ctrl;
+}
+
+inline SecularEVDCtrl<double>
+CReflect( const ElSecularEVDCtrl_d& ctrlC )
+{
+    SecularEVDCtrl<double> ctrl;
+    ctrl.maxIterations = ctrlC.maxIterations;
+    ctrl.sufficientDecay = ctrlC.sufficientDecay;
+    ctrl.negativeFix = CReflect( ctrlC.negativeFix );
+    ctrl.penalizeDerivative = CReflect( ctrlC.penalizeDerivative );
+    ctrl.progress = ctrlC.progress;
+    ctrl.cubicCtrl = CReflect( ctrlC.cubicCtrl );
+    return ctrl;
+}
+
+/* Secular SVD */
+inline ElSecularSVDCtrl_s
+CReflect( const SecularSVDCtrl<float>& ctrl )
+{
+    ElSecularSVDCtrl_s ctrlC;
+    ctrlC.maxIterations = ctrl.maxIterations;
+    ctrlC.sufficientDecay = ctrl.sufficientDecay;
+    ctrlC.negativeFix = CReflect( ctrl.negativeFix );
+    ctrlC.penalizeDerivative = CReflect( ctrl.penalizeDerivative );
+    ctrlC.progress = ctrl.progress;
+    ctrlC.cubicCtrl = CReflect( ctrl.cubicCtrl );
+    return ctrlC;
+}
+
+inline ElSecularSVDCtrl_d
+CReflect( const SecularSVDCtrl<double>& ctrl )
+{
+    ElSecularSVDCtrl_d ctrlC;
+    ctrlC.maxIterations = ctrl.maxIterations;
+    ctrlC.sufficientDecay = ctrl.sufficientDecay;
+    ctrlC.negativeFix = CReflect( ctrl.negativeFix );
+    ctrlC.penalizeDerivative = CReflect( ctrl.penalizeDerivative );
+    ctrlC.progress = ctrl.progress;
+    ctrlC.cubicCtrl = CReflect( ctrl.cubicCtrl );
+    return ctrlC;
+}
+
+inline SecularSVDCtrl<float>
+CReflect( const ElSecularSVDCtrl_s& ctrlC )
+{
+    SecularSVDCtrl<float> ctrl;
+    ctrl.maxIterations = ctrlC.maxIterations;
+    ctrl.sufficientDecay = ctrlC.sufficientDecay;
+    ctrl.negativeFix = CReflect( ctrlC.negativeFix );
+    ctrl.penalizeDerivative = CReflect( ctrlC.penalizeDerivative );
+    ctrl.progress = ctrlC.progress;
+    ctrl.cubicCtrl = CReflect( ctrlC.cubicCtrl );
+    return ctrl;
+}
+
+inline SecularSVDCtrl<double>
+CReflect( const ElSecularSVDCtrl_d& ctrlC )
+{
+    SecularSVDCtrl<double> ctrl;
+    ctrl.maxIterations = ctrlC.maxIterations;
+    ctrl.sufficientDecay = ctrlC.sufficientDecay;
+    ctrl.negativeFix = CReflect( ctrlC.negativeFix );
+    ctrl.penalizeDerivative = CReflect( ctrlC.penalizeDerivative );
+    ctrl.progress = ctrlC.progress;
+    ctrl.cubicCtrl = CReflect( ctrlC.cubicCtrl );
+    return ctrl;
+}
+
+/* HermitianEig */
+
+inline ElHermitianTridiagEigAlg CReflect
+( const HermitianTridiagEigAlg& alg )
+{ return static_cast<ElHermitianTridiagEigAlg>(alg); }
+inline HermitianTridiagEigAlg CReflect
+( const ElHermitianTridiagEigAlg& alg )
+{ return static_cast<HermitianTridiagEigAlg>(alg); }
+
 /* HermitianEigSubset */
 inline ElHermitianEigSubset_s CReflect
 ( const HermitianEigSubset<float>& subset )
@@ -83,6 +221,50 @@ inline herm_tridiag_eig::QRCtrl CReflect
     return ctrl;
 }
 
+/* herm_tridiag_eig::DCCtrl */
+inline herm_tridiag_eig::DCCtrl<float> CReflect
+( const ElHermitianTridiagEigDCCtrl_s& ctrlC )
+{
+    herm_tridiag_eig::DCCtrl<float> ctrl;
+    ctrl.secularCtrl = CReflect( ctrlC.secularCtrl );
+    ctrl.deflationFudge = ctrlC.deflationFudge;
+    ctrl.cutoff = ctrlC.cutoff;
+    ctrl.exploitStructure = ctrlC.exploitStructure;
+    return ctrl;
+}
+
+inline herm_tridiag_eig::DCCtrl<double> CReflect
+( const ElHermitianTridiagEigDCCtrl_d& ctrlC )
+{
+    herm_tridiag_eig::DCCtrl<double> ctrl;
+    ctrl.secularCtrl = CReflect( ctrlC.secularCtrl );
+    ctrl.deflationFudge = ctrlC.deflationFudge;
+    ctrl.cutoff = ctrlC.cutoff;
+    ctrl.exploitStructure = ctrlC.exploitStructure;
+    return ctrl;
+}
+
+inline ElHermitianTridiagEigDCCtrl_s CReflect
+( const herm_tridiag_eig::DCCtrl<float>& ctrl )
+{
+    ElHermitianTridiagEigDCCtrl_s ctrlC;
+    ctrlC.secularCtrl = CReflect( ctrl.secularCtrl );
+    ctrlC.deflationFudge = ctrl.deflationFudge;
+    ctrlC.cutoff = ctrl.cutoff;
+    ctrlC.exploitStructure = ctrl.exploitStructure;
+    return ctrlC;
+}
+inline ElHermitianTridiagEigDCCtrl_d CReflect
+( const herm_tridiag_eig::DCCtrl<double>& ctrl )
+{
+    ElHermitianTridiagEigDCCtrl_d ctrlC;
+    ctrlC.secularCtrl = CReflect( ctrl.secularCtrl );
+    ctrlC.deflationFudge = ctrl.deflationFudge;
+    ctrlC.cutoff = ctrl.cutoff;
+    ctrlC.exploitStructure = ctrl.exploitStructure;
+    return ctrlC;
+}
+
 /* HermitianTridiagEigCtrl */
 inline ElHermitianTridiagEigCtrl_s CReflect
 ( const HermitianTridiagEigCtrl<float>& ctrl )
@@ -93,8 +275,9 @@ inline ElHermitianTridiagEigCtrl_s CReflect
     ctrlC.sort = CReflect(ctrl.sort);
     ctrlC.subset = CReflect(ctrl.subset);
     ctrlC.progress = ctrl.progress; 
-    ctrlC.useQR = ctrl.useQR;
+    ctrlC.alg = CReflect(ctrl.alg);
     ctrlC.qrCtrl = CReflect(ctrl.qrCtrl);
+    ctrlC.dcCtrl = CReflect(ctrl.dcCtrl);
     return ctrlC;
 }
 
@@ -107,8 +290,9 @@ inline ElHermitianTridiagEigCtrl_d CReflect
     ctrlC.sort = CReflect(ctrl.sort);
     ctrlC.subset = CReflect(ctrl.subset);
     ctrlC.progress = ctrl.progress; 
-    ctrlC.useQR = ctrl.useQR;
+    ctrlC.alg = CReflect(ctrl.alg);
     ctrlC.qrCtrl = CReflect(ctrl.qrCtrl);
+    ctrlC.dcCtrl = CReflect(ctrl.dcCtrl);
     return ctrlC;
 }
 
@@ -121,8 +305,9 @@ inline HermitianTridiagEigCtrl<float> CReflect
     ctrl.sort = CReflect(ctrlC.sort);
     ctrl.subset = CReflect(ctrlC.subset);
     ctrl.progress = ctrlC.progress; 
-    ctrl.useQR = ctrlC.useQR;
+    ctrl.alg = CReflect(ctrlC.alg);
     ctrl.qrCtrl = CReflect(ctrlC.qrCtrl);
+    ctrl.dcCtrl = CReflect(ctrlC.dcCtrl);
     return ctrl;
 }
 
@@ -135,8 +320,9 @@ inline HermitianTridiagEigCtrl<double> CReflect
     ctrl.sort = CReflect(ctrlC.sort);
     ctrl.subset = CReflect(ctrlC.subset);
     ctrl.progress = ctrlC.progress; 
-    ctrl.useQR = ctrlC.useQR;
+    ctrl.alg = CReflect(ctrlC.alg);
     ctrl.qrCtrl = CReflect(ctrlC.qrCtrl);
+    ctrl.dcCtrl = CReflect(ctrlC.dcCtrl);
     return ctrl;
 }
 
@@ -342,7 +528,7 @@ inline PolarInfo CReflect( const ElPolarInfo& infoC )
     return info;
 }
 
-/* BidiagSVDQRCtrl */
+/* Bidiag SVD */
 inline ElSVDApproach CReflect( SVDApproach approach )
 { return static_cast<ElSVDApproach>( approach ); }
 
@@ -357,6 +543,7 @@ inline SingularValueToleranceType
 CReflect( ElSingularValueToleranceType tolType )
 { return static_cast<SingularValueToleranceType>( tolType ); }
 
+/* bidiag_svd::QRCtrl */
 inline bidiag_svd::QRCtrl CReflect( const ElBidiagSVDQRCtrl& ctrlC )
 {
     bidiag_svd::QRCtrl ctrl;
@@ -379,7 +566,46 @@ inline ElBidiagSVDQRCtrl CReflect( const bidiag_svd::QRCtrl& ctrl )
     return ctrlC;
 }
 
-/* BidiagSVDCtrl */
+/* bidiag_svd::DCCtrl */
+inline bidiag_svd::DCCtrl<float> CReflect( const ElBidiagSVDDCCtrl_s& ctrlC )
+{
+    bidiag_svd::DCCtrl<float> ctrl;
+    ctrl.secularCtrl = CReflect( ctrlC.secularCtrl );
+    ctrl.deflationFudge = ctrlC.deflationFudge;
+    ctrl.cutoff = ctrlC.cutoff;
+    ctrl.exploitStructure = ctrlC.exploitStructure;
+    return ctrl;
+}
+
+inline bidiag_svd::DCCtrl<double> CReflect( const ElBidiagSVDDCCtrl_d& ctrlC )
+{
+    bidiag_svd::DCCtrl<double> ctrl;
+    ctrl.secularCtrl = CReflect( ctrlC.secularCtrl );
+    ctrl.deflationFudge = ctrlC.deflationFudge;
+    ctrl.cutoff = ctrlC.cutoff;
+    ctrl.exploitStructure = ctrlC.exploitStructure;
+    return ctrl;
+}
+
+inline ElBidiagSVDDCCtrl_s CReflect( const bidiag_svd::DCCtrl<float>& ctrl )
+{
+    ElBidiagSVDDCCtrl_s ctrlC;
+    ctrlC.secularCtrl = CReflect( ctrl.secularCtrl );
+    ctrlC.deflationFudge = ctrl.deflationFudge;
+    ctrlC.cutoff = ctrl.cutoff;
+    ctrlC.exploitStructure = ctrl.exploitStructure;
+    return ctrlC;
+}
+inline ElBidiagSVDDCCtrl_d CReflect( const bidiag_svd::DCCtrl<double>& ctrl )
+{
+    ElBidiagSVDDCCtrl_d ctrlC;
+    ctrlC.secularCtrl = CReflect( ctrl.secularCtrl );
+    ctrlC.deflationFudge = ctrl.deflationFudge;
+    ctrlC.cutoff = ctrl.cutoff;
+    ctrlC.exploitStructure = ctrl.exploitStructure;
+    return ctrlC;
+}
+
 inline BidiagSVDCtrl<float> CReflect( const ElBidiagSVDCtrl_s& ctrlC )
 {
     BidiagSVDCtrl<float> ctrl; 
@@ -391,7 +617,9 @@ inline BidiagSVDCtrl<float> CReflect( const ElBidiagSVDCtrl_s& ctrlC )
     ctrl.tolType = CReflect(ctrlC.tolType);
     ctrl.tol = ctrlC.tol;
     ctrl.progress = ctrlC.progress;
+    ctrl.useQR = CReflect(ctrlC.useQR);
     ctrl.qrCtrl = CReflect(ctrlC.qrCtrl);
+    ctrl.dcCtrl = CReflect(ctrlC.dcCtrl); 
     return ctrl;
 }
 
@@ -406,10 +634,11 @@ inline BidiagSVDCtrl<double> CReflect( const ElBidiagSVDCtrl_d& ctrlC )
     ctrl.tolType = CReflect(ctrlC.tolType);
     ctrl.tol = ctrlC.tol;
     ctrl.progress = ctrlC.progress;
+    ctrl.useQR = CReflect(ctrlC.useQR);
     ctrl.qrCtrl = CReflect(ctrlC.qrCtrl);
+    ctrl.dcCtrl = CReflect(ctrlC.dcCtrl); 
     return ctrl;
 }
-
 
 inline ElBidiagSVDCtrl_s CReflect( const BidiagSVDCtrl<float>& ctrl )
 {
@@ -421,7 +650,9 @@ inline ElBidiagSVDCtrl_s CReflect( const BidiagSVDCtrl<float>& ctrl )
     ctrlC.tolType = CReflect(ctrl.tolType);
     ctrlC.tol = ctrl.tol;
     ctrlC.progress = ctrl.progress;
+    ctrlC.useQR = CReflect(ctrl.useQR);
     ctrlC.qrCtrl = CReflect(ctrl.qrCtrl);
+    ctrlC.dcCtrl = CReflect(ctrl.dcCtrl);
     return ctrlC;
 }
 
@@ -435,7 +666,9 @@ inline ElBidiagSVDCtrl_d CReflect( const BidiagSVDCtrl<double>& ctrl )
     ctrlC.tolType = CReflect(ctrl.tolType);
     ctrlC.tol = ctrl.tol;
     ctrlC.progress = ctrl.progress;
+    ctrlC.useQR = CReflect(ctrl.useQR);
     ctrlC.qrCtrl = CReflect(ctrl.qrCtrl);
+    ctrlC.dcCtrl = CReflect(ctrl.dcCtrl);
     return ctrlC;
 }
 

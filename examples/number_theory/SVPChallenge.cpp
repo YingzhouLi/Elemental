@@ -25,7 +25,8 @@ int main( int argc, char* argv[] )
     try
     {
         const string inputBasisFile =
-          Input("--inputBasisFile","input basis file",string("SVPChallenge40.txt"));
+          Input("--inputBasisFile","input basis file",
+            string("../data/number_theory/SVPChallenge40.txt"));
         const bool trans = Input("--transpose","transpose input?",true);
         const string outputBasisFile = 
           Input("--outputBasisFile","output basis file",string("BKZ"));
@@ -38,10 +39,14 @@ int main( int argc, char* argv[] )
           ("--eta","eta for LLL",
            Real(1)/Real(2) + Pow(limits::Epsilon<Real>(),Real(0.9)));
         const Int varInt = Input("--variant","0: weak LLL, 1: normal LLL, 2: deep insertion LLL, 3: deep reduction LLL",1);
-        const Int blocksize = Input("--blocksize","BKZ blocksize",20);
-        const bool variableBsize = Input("--variableBsize","variable blocksize?",false);
-        const bool variableEnumType = Input("--variableEnumType","variable enum type?",false);
-        const Int multiEnumWindow = Input("--multiEnumWindow","window for y-sparse enumeration",15);
+        const Int blocksize =
+          Input("--blocksize","BKZ blocksize",20);
+        const bool variableBsize =
+          Input("--variableBsize","variable blocksize?",false);
+        const bool variableEnumType =
+          Input("--variableEnumType","variable enum type?",false);
+        const Int multiEnumWindow =
+          Input("--multiEnumWindow","window for y-sparse enumeration",15);
         const Int phaseLength =
           Input("--phaseLength","YSPARSE_ENUM phase length",10);
         const double enqueueProb =
@@ -197,6 +202,8 @@ int main( int argc, char* argv[] )
         ctrl.lllCtrl.progress = progressLLL;
         ctrl.lllCtrl.time = timeLLL;
 
+        // TODO(poulson): Make this less fragile
+        /*
         ctrl.enumCtrl.customMinInfNorms = true;
         ctrl.enumCtrl.customMaxInfNorms = true;
         ctrl.enumCtrl.customMinOneNorms = true;
@@ -217,17 +224,6 @@ int main( int argc, char* argv[] )
         // 6: [132,142)
         // 7: [142,146)
 
-        /*
-        ctrl.enumCtrl.minOneNorms[0] = 0;
-        ctrl.enumCtrl.minOneNorms[1] = 0;
-        ctrl.enumCtrl.minOneNorms[2] = 1;
-        ctrl.enumCtrl.minOneNorms[3] = 1;
-        ctrl.enumCtrl.minOneNorms[4] = 1;
-        ctrl.enumCtrl.minOneNorms[5] = 2;
-        ctrl.enumCtrl.minOneNorms[6] = 3;
-        ctrl.enumCtrl.minOneNorms[7] = 3;
-        */
-
         ctrl.enumCtrl.maxOneNorms[0] = 0;
         ctrl.enumCtrl.maxOneNorms[1] = 1;
         ctrl.enumCtrl.maxOneNorms[2] = 1;
@@ -237,17 +233,6 @@ int main( int argc, char* argv[] )
         ctrl.enumCtrl.maxOneNorms[6] = 3;
         ctrl.enumCtrl.maxOneNorms[7] = 3;
 
-        /*
-        ctrl.enumCtrl.minInfNorms[0] = 0;
-        ctrl.enumCtrl.minInfNorms[1] = 0;
-        ctrl.enumCtrl.minInfNorms[2] = 1;
-        ctrl.enumCtrl.minInfNorms[3] = 1;
-        ctrl.enumCtrl.minInfNorms[4] = 1;
-        ctrl.enumCtrl.minInfNorms[5] = 1;
-        ctrl.enumCtrl.minInfNorms[6] = 1;
-        ctrl.enumCtrl.minInfNorms[7] = 1;
-        */
-
         ctrl.enumCtrl.maxInfNorms[0] = 1;
         ctrl.enumCtrl.maxInfNorms[1] = 1;
         ctrl.enumCtrl.maxInfNorms[2] = 1;
@@ -256,6 +241,7 @@ int main( int argc, char* argv[] )
         ctrl.enumCtrl.maxInfNorms[5] = 1;
         ctrl.enumCtrl.maxInfNorms[6] = 2;
         ctrl.enumCtrl.maxInfNorms[7] = 2;
+        */
 
         const double startTime = mpi::Time();
         Matrix<Real> R;

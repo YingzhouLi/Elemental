@@ -221,17 +221,16 @@ void TestSuite
     ctrl.tridiagCtrl.symvCtrl.avoidTrmvBasedLocalSymv =
       ctrlDbl.tridiagCtrl.symvCtrl.avoidTrmvBasedLocalSymv;
     ctrl.tridiagEigCtrl.sort = ctrlDbl.tridiagEigCtrl.sort;
-    ctrl.tridiagEigCtrl.useQR = ctrlDbl.tridiagEigCtrl.useQR;
+    ctrl.tridiagEigCtrl.alg = ctrlDbl.tridiagEigCtrl.alg;
     ctrl.tridiagEigCtrl.subset = subset;
+    ctrl.tridiagEigCtrl.progress = ctrlDbl.tridiagEigCtrl.progress;
 
-    if( sequential )
+    if( sequential && g.Rank() == 0 )
     {
         TestHermitianEigSequential<F>
         ( m, uplo, onlyEigvals, clustered, correctness, print, ctrl );
     }
-    // Distributed eigensolvers are currently only supported for {float,double}
-    const bool canSolve = IsBlasScalar<Real>::value || (g.Size()==1);
-    if( distributed && canSolve )
+    if( distributed )
     {
         OutputFromRoot(g.Comm(),"Normal tridiag algorithms:");
         ctrl.tridiagCtrl.approach = HERMITIAN_TRIDIAG_NORMAL;
@@ -290,13 +289,14 @@ main( int argc, char* argv[] )
           Input("--avoidTrmv","avoid Trmv based Symv",true);
         const bool useScaLAPACK =
           Input("--useScaLAPACK","test ScaLAPACK?",false);
-        const bool useQR = Input("--useQR","use QR algorithm?",false);
+        const Int algInt = Input("--algInt","0: QR, 1: D&C, 2: MRRR",1);
         const bool sequential =
           Input("--sequential","test sequential?",true);
         const bool distributed = 
           Input("--distributed","test distributed?",true);
         const bool correctness =
           Input("--correctness","test correctness?",true);
+        const bool progress = Input("--progress","print progress?",false); 
         const bool print = Input("--print","print matrices?",false);
         const bool testReal = Input("--testReal","test real matrices?",true);
         const bool testCpx = Input("--testCpx","test complex matrices?",true);
@@ -309,6 +309,7 @@ main( int argc, char* argv[] )
         const GridOrder order = ( colMajor ? COLUMN_MAJOR : ROW_MAJOR );
         const Grid g( comm, gridHeight, order );
         const UpperOrLower uplo = CharToUpperOrLower( uploChar );
+        const auto alg = static_cast<HermitianTridiagEigAlg>(algInt);
         SetBlocksize( nb );
         if( range != 'A' && range != 'I' && range != 'V' )
             LogicError("'range' must be 'A', 'I', or 'V'");
@@ -340,8 +341,9 @@ main( int argc, char* argv[] )
         ctrl.tridiagCtrl.symvCtrl.bsize = nbLocal;
         ctrl.tridiagCtrl.symvCtrl.avoidTrmvBasedLocalSymv = avoidTrmv;
         ctrl.tridiagEigCtrl.sort = sort;
-        ctrl.tridiagEigCtrl.useQR = useQR;
+        ctrl.tridiagEigCtrl.alg = alg;
         ctrl.tridiagEigCtrl.subset = subset;
+        ctrl.tridiagEigCtrl.progress = progress;
 
         if( testReal )
         {
@@ -368,7 +370,6 @@ main( int argc, char* argv[] )
             ( m, uplo, onlyEigvals, clustered,
               sequential, distributed, correctness, print, g, ctrl );
 #endif
-
 #ifdef EL_HAVE_MPC
             TestSuite<BigFloat>
             ( m, uplo, onlyEigvals, clustered,

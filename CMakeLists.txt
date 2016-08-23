@@ -12,7 +12,14 @@
 #  which can be found in the LICENSE file in the root directory, or at
 #  http://opensource.org/licenses/BSD-2-Clause
 #
-cmake_minimum_required(VERSION 2.8.12)
+if(APPLE)
+  # RPATH support for OS X was introduced in this version
+  cmake_minimum_required(VERSION 2.8.12)
+else()
+  # It is likely/possible that this version could be decreased, but this version
+  # was chosen to support the default version of CMake in CentOS 7
+  cmake_minimum_required(VERSION 2.8.11)
+endif()
 
 project(Elemental C CXX)
 set(EL_VERSION_MAJOR 0)
@@ -55,6 +62,26 @@ endif()
 if(BUILD_SHARED_LIBS AND NOT SUPPORTS_SHARED)
   message("Elemental was configured to build shared libraries, but they are not supported on the target platform: BUILD_SHARED_LIBS will be manually set to OFF")
   set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries?")
+endif()
+
+include(GNUInstallDirs)
+if(NOT CMAKE_INSTALL_INCLUDEDIR)
+  set(CMAKE_INSTALL_INCLUDEDIR "include")
+endif()
+if(NOT CMAKE_INSTALL_LIBDIR) 
+  set(CMAKE_INSTALL_LIBDIR "lib") 
+endif()
+if(NOT CMAKE_INSTALL_BINDIR)
+  set(CMAKE_INSTALL_BINDIR "bin")
+endif()
+if(NOT CMAKE_INSTALL_DATADIR)
+  set(CMAKE_INSTALL_DATADIR "share") 
+endif()
+if(NOT CMAKE_INSTALL_DOCDIR)
+  set(CMAKE_INSTALL_DOCDIR "share/doc/elemental") 
+endif()
+if(NOT CMAKE_INSTALL_SYSCONFDIR)
+  set(CMAKE_INSTALL_SYSCONFDIR "etc") 
 endif()
 
 # Whether or not to attempt to use OpenMP within hot-spots in Elemental
@@ -361,8 +388,8 @@ include(external_projects/ElMath)
 # ----------------------------------------------------------
 set(CMAKE_CXX_FLAGS_${UPPER_BUILD_TYPE} ${CXX_FLAGS})
 set(EL_LINK_FLAGS)
-if(MPI_LINK_FLAGS)
-  set(EL_LINK_FLAGS ${MPI_LINK_FLAGS})
+if(MPI_CXX_LINK_FLAGS)
+  set(EL_LINK_FLAGS ${MPI_CXX_LINK_FLAGS})
 endif()
 if(EL_BUILT_BLIS_LAPACK)
   if(EL_LINK_FLAGS)
@@ -424,11 +451,11 @@ endif()
 configure_file("${PROJECT_SOURCE_DIR}/cmake/configure_files/config.h.in"
                "${PROJECT_BINARY_DIR}/include/El/config.h")
 install(FILES "${PROJECT_BINARY_DIR}/include/El/config.h"
-        DESTINATION include/El)
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/El)
 add_custom_target(El_config DEPENDS "${PROJECT_BINARY_DIR}/include/El/config.h")
 install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/"
-  DESTINATION include/
-  FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} 
+  	FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
 
 # Define the main library for Elemental
 # -------------------------------------
@@ -459,7 +486,7 @@ target_link_libraries(El ${LINK_LIBS})
 if(EL_LINK_FLAGS)
   set_target_properties(El PROPERTIES LINK_FLAGS ${EL_LINK_FLAGS})
 endif()
-install(TARGETS El EXPORT ElementalTargets DESTINATION lib)
+install(TARGETS El EXPORT ElementalTargets DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 # Decide if/how to install the Python interface
 # ---------------------------------------------
@@ -496,9 +523,12 @@ if(BUILD_SHARED_LIBS)
       DESTINATION python/El/core)
   endif()
 endif()
-
+if(NOT NO_BINARY_SUBDIRECTORIES)
+   set(EXPERIMENTAL_INSTALL_DIR experimental/g3d)
+endif()
 # Experimental
 # ============
+# NOTE: This is insanely outdated
 if(EL_EXPERIMENTAL)
   set(EXPERIMENTAL_DIR "${PROJECT_SOURCE_DIR}/experimental")
   # Build the G3D example(s)
@@ -511,14 +541,32 @@ if(EL_EXPERIMENTAL)
       OBJECT_DEPENDS "${PREPARED_HEADERS}")
     target_link_libraries(experimental-g3d-${EXPER} El)
     set_target_properties(experimental-g3d-${EXPER} PROPERTIES
-      OUTPUT_NAME ${EXPER} RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR})
+      OUTPUT_NAME ${EXPER}
+      SUFFIX "${CMAKE_EXECUTABLE_SUFFIX_CXX}"
+      RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR})
     if(EL_LINK_FLAGS)
       set_target_properties(experimental-g3d-${EXPER} PROPERTIES
         LINK_FLAGS ${EL_LINK_FLAGS})
     endif()
-    install(TARGETS experimental-g3d-${EXPER} DESTINATION bin/experimental/g3d)
+    install(TARGETS experimental-g3d-${EXPER} DESTINATION ${CMAKE_INSTALL_BINDIR}/${EXPERIMENTAL_INSTALL_DIR})
   endforeach()
 endif()
+
+# Install data
+# ============
+# TODO(poulson): Also install into the build directory? How to have drivers
+# automatically find the right path?
+install(DIRECTORY "${PROJECT_SOURCE_DIR}/data/"
+	DESTINATION ${CMAKE_INSTALL_DATADIR}/elemental/ FILES_MATCHING PATTERN "*.*")
+
+# Install license and author information
+# ======================================
+install(FILES "${PROJECT_SOURCE_DIR}/AUTHORS"
+              "${PROJECT_SOURCE_DIR}/LICENSE"
+              "${PROJECT_SOURCE_DIR}/PUBLICATIONS.bib"
+              "${PROJECT_SOURCE_DIR}/README.md"
+              "${PROJECT_SOURCE_DIR}/REFERENCES.bib"
+	      DESTINATION ${CMAKE_INSTALL_DOCDIR})
 
 # Tests and examples
 # ==================
@@ -526,13 +574,15 @@ include(CTest)
 
 # Sandbox test
 # ------------
-install(FILES "${PROJECT_SOURCE_DIR}/sandbox/Makefile" DESTINATION sandbox)
-install(FILES "${PROJECT_SOURCE_DIR}/sandbox/test.cpp" DESTINATION sandbox)
+install(FILES "${PROJECT_SOURCE_DIR}/sandbox/Makefile" DESTINATION ${CMAKE_INSTALL_DOCDIR}/sandbox)
+install(FILES "${PROJECT_SOURCE_DIR}/sandbox/test.cpp" DESTINATION ${CMAKE_INSTALL_DOCDIR}/sandbox)
 add_executable(sandbox-test "${PROJECT_SOURCE_DIR}/sandbox/test.cpp")
 set_source_files_properties("${PROJECT_SOURCE_DIR}/sandbox/test.cpp"
   PROPERTIES OBJECT_DEPENDS "${PREPARED_HEADERS}")
 target_link_libraries(sandbox-test El)
-set_target_properties(sandbox-test PROPERTIES OUTPUT_NAME sandbox-test 
+set_target_properties(sandbox-test PROPERTIES
+  OUTPUT_NAME sandbox-test
+  SUFFIX "${CMAKE_EXECUTABLE_SUFFIX_CXX}"
   RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
 if(EL_LINK_FLAGS)
   set_target_properties(sandbox-test PROPERTIES LINK_FLAGS ${EL_LINK_FLAGS})
@@ -558,12 +608,17 @@ if(EL_TESTS)
         OBJECT_DEPENDS "${PREPARED_HEADERS}")
       target_link_libraries(tests-${TYPE}-${TESTNAME} El)
       set_target_properties(tests-${TYPE}-${TESTNAME} PROPERTIES
-        OUTPUT_NAME ${TESTNAME} RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}")
+        OUTPUT_NAME ${TESTNAME}
+        SUFFIX "${CMAKE_EXECUTABLE_SUFFIX_CXX}"
+        RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}")
       if(EL_LINK_FLAGS)
         set_target_properties(tests-${TYPE}-${TESTNAME} PROPERTIES
           LINK_FLAGS ${EL_LINK_FLAGS})
       endif()
-      install(TARGETS tests-${TYPE}-${TESTNAME} DESTINATION bin/tests/${TYPE})
+      if(NOT NO_BINARY_SUBDIRECTORIES)
+      	set(TEST_INSTALL_DIR test/${TYPE})
+      endif()
+      install(TARGETS tests-${TYPE}-${TESTNAME} DESTINATION ${CMAKE_INSTALL_BINDIR}/${TEST_INSTALL_DIR})
       if(NOT TESTNAME STREQUAL "SparseLDLRange") #Skip tests that can time out
         add_test(NAME Tests/${TYPE}/${TESTNAME} 
           WORKING_DIRECTORY "${TEST_DIR}" COMMAND tests-${TYPE}-${TESTNAME})
@@ -599,13 +654,18 @@ if(EL_EXAMPLES)
         OBJECT_DEPENDS "${PREPARED_HEADERS}")
       target_link_libraries(examples-${TYPE}-${EXNAME} El)
       set_target_properties(examples-${TYPE}-${EXNAME} PROPERTIES
-        OUTPUT_NAME ${EXNAME} RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}")
+        OUTPUT_NAME ${EXNAME}
+        SUFFIX "${CMAKE_EXECUTABLE_SUFFIX_CXX}"
+        RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}")
       if(EL_LINK_FLAGS)
         set_target_properties(examples-${TYPE}-${EXNAME} PROPERTIES
           LINK_FLAGS ${EL_LINK_FLAGS})
       endif()
+      if(NOT NO_BINARY_SUBDIRECTORIES)
+      	set(EXAMPLE_INSTALL_DIR examples/${TYPE})
+      endif()
       install(TARGETS examples-${TYPE}-${EXNAME}
-        DESTINATION bin/examples/${TYPE})
+	      DESTINATION ${CMAKE_INSTALL_BINDIR}/${EXAMPLE_INSTALL_DIR})
       add_test(NAME Examples/${TYPE}/${EXNAME} WORKING_DIRECTORY "${OUTPUT_DIR}"
         COMMAND examples-${TYPE}-${EXNAME})
     endforeach()
@@ -659,7 +719,7 @@ set(INSTALL_CMAKE_DIR CMake)
 install(FILES
   "${PROJECT_BINARY_DIR}/ElementalConfig.cmake"
   "${PROJECT_BINARY_DIR}/ElementalConfigVersion.cmake"
-  DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
+  DESTINATION "${CMAKE_INSTALL_SYSCONFDIR}/elemental/${INSTALL_CMAKE_DIR}" COMPONENT dev)
 
 install(EXPORT ElementalTargets
-  DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
+	DESTINATION "${CMAKE_INSTALL_SYSCONFDIR}/elemental/${INSTALL_CMAKE_DIR}" COMPONENT dev)

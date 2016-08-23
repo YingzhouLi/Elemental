@@ -83,7 +83,7 @@ void PrintCCompilerInfo( ostream& os )
        << "  EL_MPI_C_COMPILER:      " << EL_MPI_C_COMPILER << "\n"
        << "  EL_MPI_C_INCLUDE_PATH:  " << EL_MPI_C_INCLUDE_PATH << "\n"
        << "  EL_MPI_C_COMPILE_FLAGS: " << EL_MPI_C_COMPILE_FLAGS << "\n"
-       << "  EL_MPI_LINK_FLAGS:      " << EL_MPI_LINK_FLAGS << "\n"
+       << "  EL_MPI_C_LINK_FLAGS:    " << EL_MPI_C_LINK_FLAGS << "\n"
        << "  EL_MPI_C_LIBRARIES:     " << EL_MPI_C_LIBRARIES << "\n"
        << endl;
 }
@@ -96,7 +96,7 @@ void PrintCxxCompilerInfo( ostream& os )
        << "  EL_MPI_CXX_COMPILER:      " << EL_MPI_CXX_COMPILER << "\n"
        << "  EL_MPI_CXX_INCLUDE_PATH:  " << EL_MPI_CXX_INCLUDE_PATH << "\n"
        << "  EL_MPI_CXX_COMPILE_FLAGS: " << EL_MPI_CXX_COMPILE_FLAGS << "\n"
-       << "  EL_MPI_LINK_FLAGS:        " << EL_MPI_LINK_FLAGS << "\n"
+       << "  EL_MPI_CXX_LINK_FLAGS:    " << EL_MPI_CXX_LINK_FLAGS << "\n"
        << "  EL_MPI_CXX_LIBRARIES:     " << EL_MPI_CXX_LIBRARIES << "\n"
        << endl;
 }
@@ -235,6 +235,10 @@ void Finalize()
     }
 
     DEBUG_ONLY( CloseLog() )
+#ifdef EL_HAVE_MPC
+    if( EL_RUNNING_ON_VALGRIND )
+        mpfr_free_cache();
+#endif
 }
 
 Args& GetArgs()

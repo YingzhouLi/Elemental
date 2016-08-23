@@ -121,6 +121,7 @@ Real MaxSingularValueEstimateOfBidiag
 
 namespace qr {
 
+// Cf. LAPACK's {s,d}bdsqr for these sweep strategies.
 template<typename F>
 void Sweep
 (       Matrix<Base<F>>& mainDiag,
@@ -213,6 +214,9 @@ void Sweep
             //
             //    (|alpha_0|-shift) (sgn(alpha_0)+shift/alpha_0).
             //
+            // If alpha_0 was zero, we should have forced a zero-shift iteration
+            // to push it down the diagonal.
+            //
             Real f = (Abs(mainDiag(0))-shift)*
                      (Sgn(mainDiag(0),false)+shift/mainDiag(0));
             Real g = superDiag(0); 
@@ -277,13 +281,13 @@ void Sweep
 
                 if( ctrl.wantU )
                 {
-                    cUList(i) = cU;
-                    sUList(i) = -sU;
+                    cUList(i-1) = cU;
+                    sUList(i-1) = -sU;
                 }
                 if( ctrl.wantV )
                 {
-                    cVList(i) = cV;
-                    sVList(i) = -sV;
+                    cVList(i-1) = cV;
+                    sVList(i-1) = -sV;
                 }
             }
             eta = mainDiag(0)*cU;
@@ -317,6 +321,8 @@ void Sweep
             //
             //    (|alpha_{n-1}|-shift) (sgn(alpha_{n-1})+shift/alpha_{n-1}).
             //
+            // If alpha_{n-1} was zero, we should have forced a zero-shift
+            // iteration to push it down the diagonal.
             Real f = (Abs(mainDiag(n-1))-shift)*
                      (Sgn(mainDiag(n-1),false)+shift/mainDiag(n-1));
             Real g = superDiag(n-2);
@@ -329,7 +335,7 @@ void Sweep
 
                 f = cU*mainDiag(i) + sU*superDiag(i-1);
                 superDiag(i-1) = cU*superDiag(i-1) - sU*mainDiag(i);
-                g = sU*superDiag(i-1);
+                g = sU*mainDiag(i-1);
                 mainDiag(i-1) *= cU;
                 mainDiag(i) = Givens( f, g, cV, sV );
 
@@ -343,13 +349,13 @@ void Sweep
 
                 if( ctrl.wantU )
                 {
-                    cUList(i) = cU;
-                    sUList(i) = -sU;
+                    cUList(i-1) = cU;
+                    sUList(i-1) = -sU;
                 }
                 if( ctrl.wantV )
                 {
-                    cVList(i) = cV;
-                    sVList(i) = -sV;
+                    cVList(i-1) = cV;
+                    sVList(i-1) = -sV;
                 }
             }
             superDiag(0) = f;
@@ -450,10 +456,6 @@ Helper
     // 'winEnd' will always point just past the last unconverged singular value
     // and each iteration will select the largest possible unreduced bidiagonal
     //  window of the form [winBeg,winEnd).
-    Int innerLoops=0, numZeroForwardInnerLoops=0,
-                      numZeroBackwardInnerLoops=0,
-                      numNonzeroForwardInnerLoops=0,
-                      numNonzeroBackwardInnerLoops=0;
     Int winEnd = n;
     Int oldWinBeg=-1, oldWinEnd=-1;
     ForwardOrBackward direction = FORWARD;
@@ -462,7 +464,7 @@ Helper
     Matrix<F> USub, VSub;
     while( winEnd > 0 )
     {
-        if( innerLoops > maxInnerLoops )
+        if( info.numInnerLoops > maxInnerLoops )
         {
             if( ctrl.qrCtrl.demandConverged )
                 LogicError("Did not converge all singular values");
@@ -502,7 +504,7 @@ Helper
         if( ctrl.progress )
         {
             Output
-            ("  After ",innerLoops," inner loops: window is [",
+            ("  After ",info.numInnerLoops," inner loops: window is [",
              winBeg,",",winEnd,")");
         }
 
@@ -639,18 +641,31 @@ Helper
                       Abs(mainDiag(j))*(lambda/(lambda+Abs(superDiag(j))));
                     winMinSingValEst = Min( winMinSingValEst, lambda );
                 }
+                if( deflated )
+                    continue;
             }
         }
 
         // No deflation checks succeeded, so save the window before shifting
         oldWinBeg = winBeg;
         oldWinEnd = winEnd;
-        innerLoops += winEnd-winBeg;
+        info.numInnerLoops += winEnd-winBeg;
+        ++info.numIterations;
 
         Real shift = zero;
-        if( relativeToSelfTol &&
-            zeroShiftFudge*tol*(winMinSingValEst/winMaxSingValEst) <=
-            Max(eps,tol/100) )
+        // We cannot simply use winMinSingValEst to additionally guard the 
+        // non high-relative-accuracy case since it was not actually computed
+        // in said instance. Instead, we simply check if the relevant starting
+        // diagonal entry is zero to avoid a divide-by-zero when applying the
+        // implicit Q theorem within the upcoming sweep.
+        const bool zeroStartingValue =
+          ( direction == FORWARD ?
+            mainDiag(winBeg) == zero :
+            mainDiag(winEnd-1) == zero );
+        const bool poorlyConditioned =
+          ( zeroShiftFudge*tol*(winMinSingValEst/winMaxSingValEst) <=
+            Max(eps,tol/100) );
+        if( zeroStartingValue || (relativeToSelfTol && poorlyConditioned) )
         {
             shift = zero; 
         }
@@ -683,16 +698,28 @@ Helper
         if( shift == zero )
         {
             if( direction == FORWARD )
-                numZeroForwardInnerLoops += winEnd-winBeg;
+            {
+                info.numZeroShiftForwardInnerLoops += winEnd-winBeg;
+                ++info.numZeroShiftForwardIterations;
+            }
             else
-                numZeroBackwardInnerLoops += winEnd-winBeg;
+            {
+                info.numZeroShiftBackwardInnerLoops += winEnd-winBeg;
+                ++info.numZeroShiftBackwardIterations;
+            }
         }
         else
         {
             if( direction == FORWARD )
-                numNonzeroForwardInnerLoops += winEnd-winBeg;
+            {
+                info.numNonzeroShiftForwardInnerLoops += winEnd-winBeg;
+                ++info.numNonzeroShiftForwardIterations;
+            }
             else
-                numNonzeroBackwardInnerLoops += winEnd-winBeg;
+            {
+                info.numNonzeroShiftBackwardInnerLoops += winEnd-winBeg;
+                ++info.numNonzeroShiftBackwardIterations;
+            }
         }
         if( ctrl.progress )
             Output("  Set shift to ",shift);
@@ -739,7 +766,6 @@ Helper
         }
     }
 
-    // TODO: Extend info to include innerLoops
     return info;
 }
 
@@ -796,6 +822,8 @@ QRAlg
   const BidiagSVDCtrl<Real>& ctrl )
 {
     DEBUG_CSE
+    if( superDiag.Height() != mainDiag.Height()-1 )
+        LogicError("Invalid superDiag length");
     if( IsBlasScalar<Real>::value && ctrl.qrCtrl.useLAPACK )
     {
         return qr::LAPACKHelper( mainDiag, superDiag, ctrl );
@@ -921,6 +949,9 @@ QRAlg
 {
     DEBUG_CSE
     const Int n = mainDiag.Height();
+    if( superDiag.Height() != n-1 )
+        LogicError("Invalid superDiag length");
+
     if( !ctrl.wantU && !ctrl.wantV )
     {
         return QRAlg( mainDiag, superDiag, ctrl );

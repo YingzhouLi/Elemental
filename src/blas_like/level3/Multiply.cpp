@@ -14,8 +14,102 @@
 namespace El {
 
 namespace {
-
+/**
+ * MultiplyCSR specialization where the CSR matrix happens to have all nonzeros = 1.
+ */
 template<typename T>
+void MultiplyCSR
+( Orientation orientation,
+  Int m, Int n,
+  T alpha,
+  const Int* rowOffsets,
+  const Int* colIndices,
+  const T*   x,
+  T beta,
+        T*   y )
+{
+    DEBUG_CSE
+    if( orientation == NORMAL )
+    {
+        for( Int i=0; i<m; ++i )
+        {
+            T sum = 0;
+            const Int eStart = rowOffsets[i];
+            const Int eStop = rowOffsets[i+1];
+            for( Int e=eStart; e<eStop; ++e )
+                sum += x[colIndices[e]];         
+            y[i] = alpha*sum + beta*y[i];
+        }
+    }
+    else
+    {
+        for( Int j=0; j<n; ++j ){
+            y[j] *= beta;
+            for( Int i=0; i<m; ++i )
+            {
+                const Int eStart = rowOffsets[i];
+                const Int eStop = rowOffsets[i+1];
+                for( Int e=eStart; e<eStop; ++e )
+                    y[colIndices[e]] += alpha*x[i];         
+            }
+	}
+    }
+}
+
+template<typename T,typename=DisableIf<IsBlasScalar<T>>>
+void MultiplyCSR
+( Orientation orientation,
+  Int m, Int n,
+  T alpha,
+  const Int* rowOffsets,
+  const Int* colIndices,
+  const T*   values,
+  const T*   x,
+  T beta,
+        T*   y )
+{
+    DEBUG_CSE
+    if( orientation == NORMAL )
+    {
+        for( Int i=0; i<m; ++i )
+        {
+            T sum = 0;
+            const Int eStart = rowOffsets[i];
+            const Int eStop = rowOffsets[i+1];
+            for( Int e=eStart; e<eStop; ++e )
+                sum += values[e]*x[colIndices[e]];         
+            y[i] = alpha*sum + beta*y[i];
+        }
+    }
+    else
+    {
+        const bool conj = ( orientation == ADJOINT );
+        for( Int j=0; j<n; ++j )
+            y[j] *= beta;
+        if( conj )
+        {
+            for( Int i=0; i<m; ++i )
+            {
+                const Int eStart = rowOffsets[i];
+                const int eStop = rowOffsets[i+1];
+                for( Int e=eStart; e<eStop; ++e )
+                    y[colIndices[e]] += alpha*Conj(values[e])*x[i];         
+            }
+        }
+        else
+        {
+            for( Int i=0; i<m; ++i )
+            {
+                const Int eStart = rowOffsets[i];
+                const Int eStop = rowOffsets[i+1];
+                for( Int e=eStart; e<eStop; ++e )
+                    y[colIndices[e]] += alpha*values[e]*x[i];         
+            }
+        }
+    }
+}
+
+template<typename T,typename=EnableIf<IsBlasScalar<T>>,typename=void>
 void MultiplyCSR
 ( Orientation orientation,
   Int m, Int n,
@@ -76,167 +170,6 @@ void MultiplyCSR
     }
 #endif
 }
-
-template<>
-void MultiplyCSR<Int>
-( Orientation orientation,
-  Int m, Int n,
-  Int alpha,
-  const Int* rowOffsets,
-  const Int* colIndices,
-  const Int*   values,
-  const Int*   x,
-  Int beta,
-        Int*   y )
-{
-    DEBUG_CSE
-    if( orientation == NORMAL )
-    {
-        for( Int i=0; i<m; ++i )
-        {
-            Int sum = 0;
-            const Int eStart = rowOffsets[i];
-            const Int eStop = rowOffsets[i+1];
-            for( Int e=eStart; e<eStop; ++e )
-                sum += values[e]*x[colIndices[e]];         
-            y[i] = alpha*sum + beta*y[i];
-        }
-    }
-    else
-    {
-        const bool conj = ( orientation == ADJOINT );
-        for( Int j=0; j<n; ++j )
-            y[j] *= beta;
-        if( conj )
-        {
-            for( Int i=0; i<m; ++i )
-            {
-                const Int eStart = rowOffsets[i];
-                const Int eStop = rowOffsets[i+1];
-                for( Int e=eStart; e<eStop; ++e )
-                    y[colIndices[e]] += alpha*Conj(values[e])*x[i];         
-            }
-        }
-        else
-        {
-            for( Int i=0; i<m; ++i )
-            {
-                const Int eStart = rowOffsets[i];
-                const Int eStop = rowOffsets[i+1];
-                for( Int e=eStart; e<eStop; ++e )
-                    y[colIndices[e]] += alpha*values[e]*x[i];         
-            }
-        }
-    }
-}
-
-#ifdef EL_HAVE_QUAD
-template<>
-void MultiplyCSR<Quad>
-( Orientation orientation,
-  Int m, Int n,
-  Quad alpha,
-  const Int* rowOffsets,
-  const Int* colIndices,
-  const Quad*   values,
-  const Quad*   x,
-  Quad beta,
-        Quad*   y )
-{
-    DEBUG_CSE
-    if( orientation == NORMAL )
-    {
-        for( Int i=0; i<m; ++i )
-        {
-            Quad sum = 0;
-            const Int eStart = rowOffsets[i];
-            const Int eStop = rowOffsets[i+1];
-            for( Int e=eStart; e<eStop; ++e )
-                sum += values[e]*x[colIndices[e]];         
-            y[i] = alpha*sum + beta*y[i];
-        }
-    }
-    else
-    {
-        const bool conj = ( orientation == ADJOINT );
-        for( Int j=0; j<n; ++j )
-            y[j] *= beta;
-        if( conj )
-        {
-            for( Int i=0; i<m; ++i )
-            {
-                const Int eStart = rowOffsets[i];
-                const Int eStop = rowOffsets[i+1];
-                for( Int e=eStart; e<eStop; ++e )
-                    y[colIndices[e]] += alpha*Conj(values[e])*x[i];         
-            }
-        }
-        else
-        {
-            for( Int i=0; i<m; ++i )
-            {
-                const Int eStart = rowOffsets[i];
-                const Int eStop = rowOffsets[i+1];
-                for( Int e=eStart; e<eStop; ++e )
-                    y[colIndices[e]] += alpha*values[e]*x[i];         
-            }
-        }
-    }
-}
-
-template<>
-void MultiplyCSR<Complex<Quad>>
-( Orientation orientation,
-  Int m, Int n,
-  Complex<Quad> alpha,
-  const Int* rowOffsets,
-  const Int* colIndices,
-  const Complex<Quad>*   values,
-  const Complex<Quad>*   x,
-  Complex<Quad> beta,
-        Complex<Quad>*   y )
-{
-    DEBUG_CSE
-    if( orientation == NORMAL )
-    {
-        for( Int i=0; i<m; ++i )
-        {
-            Complex<Quad> sum = 0;
-            const Int eStart = rowOffsets[i];
-            const Int eStop = rowOffsets[i+1];
-            for( Int e=eStart; e<eStop; ++e )
-                sum += values[e]*x[colIndices[e]];         
-            y[i] = alpha*sum + beta*y[i];
-        }
-    }
-    else
-    {
-        const bool conj = ( orientation == ADJOINT );
-        for( Int j=0; j<n; ++j )
-            y[j] *= beta;
-        if( conj )
-        {
-            for( Int i=0; i<m; ++i )
-            {
-                const Int eStart = rowOffsets[i];
-                const Int eStop = rowOffsets[i+1];
-                for( Int e=eStart; e<eStop; ++e )
-                    y[colIndices[e]] += alpha*Conj(values[e])*x[i];         
-            }
-        }
-        else
-        {
-            for( Int i=0; i<m; ++i )
-            {
-                const Int eStart = rowOffsets[i];
-                const Int eStop = rowOffsets[i+1];
-                for( Int e=eStart; e<eStop; ++e )
-                    y[colIndices[e]] += alpha*values[e]*x[i];         
-            }
-        }
-    }
-}
-#endif // ifdef EL_HAVE_QUAD
 
 template<typename T>
 void MultiplyCSR
@@ -306,6 +239,64 @@ void MultiplyCSR
                     for( Int k=0; k<numRHS; ++k )
                         Y[colIndices[e]+k*ldY] += prod*X[i+k*ldX];         
                 }
+            }
+        }
+    }
+}
+
+template<typename T>
+void MultiplyCSR
+( Orientation orientation,
+  Int m, Int n, Int numRHS,
+  T alpha,
+  const Int* rowOffsets,
+  const Int* colIndices,
+  const T*   X, Int ldX,
+  T beta,
+        T*   Y, Int ldY )
+{
+    DEBUG_CSE
+    if( numRHS == 1 )
+    {
+        MultiplyCSR
+        ( orientation, m, n, alpha, 
+          rowOffsets, colIndices, X, beta, Y );
+        return;
+    }
+
+    if( orientation == NORMAL )
+    {
+        for( Int i=0; i<m; ++i )
+        {
+            for( Int k=0; k<numRHS; ++k )
+            {
+                T sum = 0;
+                const Int eStart = rowOffsets[i];
+                const Int eStop = rowOffsets[i+1];
+                for( Int e=eStart; e<eStop; ++e )
+                    sum += X[colIndices[e]+k*ldX];
+                Y[i+k*ldY] = alpha*sum + beta*Y[i+k*ldY];
+            }
+        }
+    }
+    else
+    {
+        for( Int k=0; k<numRHS; ++k )
+	{
+            for( Int j=0; j<n; ++j )
+	    {
+                Y[j+k*ldY] *= beta;
+            	for( Int i=0; i<m; ++i )
+            	{
+            	    const Int eStart = rowOffsets[i];
+            	    const Int eStop = rowOffsets[i+1];
+            	    for( Int e=eStart; e<eStop; ++e )
+            	    {
+            	        for( Int k=0; k<numRHS; ++k ){
+            	            Y[colIndices[e]+k*ldY] += alpha*X[i+k*ldX]; 
+			}	    
+            	    }
+            	}
             }
         }
     }
@@ -534,7 +525,7 @@ void MultiplyCSRInter
 
 template<typename T>
 void Multiply
-( Orientation orientation, 
+( Orientation orientation,
   T alpha, const SparseMatrix<T>& A, const Matrix<T>& X,
   T beta,                                  Matrix<T>& Y )
 {
@@ -545,12 +536,32 @@ void Multiply
     )
     MultiplyCSR
     ( orientation, A.Height(), A.Width(), X.Width(),
-      alpha, A.LockedOffsetBuffer(), 
-             A.LockedTargetBuffer(), 
+      alpha, A.LockedOffsetBuffer(),
+             A.LockedTargetBuffer(),
              A.LockedValueBuffer(),
              X.LockedBuffer(), X.LDim(),
       beta,  Y.Buffer(),       Y.LDim() );
 }
+
+template<typename T>
+void Multiply
+( Orientation orientation, 
+  T alpha, const Graph& A, const Matrix<T>& X,
+  T beta,                        Matrix<T>& Y )
+{
+    DEBUG_CSE
+    DEBUG_ONLY(
+      if( X.Width() != Y.Width() )
+          LogicError("X and Y must have the same width");
+    )
+    MultiplyCSR
+    ( orientation, A.NumSources(), A.NumTargets(), X.Width(), 
+      alpha, A.LockedOffsetBuffer(), 
+             A.LockedTargetBuffer(), 
+             X.LockedBuffer(), X.LDim(),
+      beta,  Y.Buffer(), Y.LDim());
+}
+
 
 template<typename T>
 void Multiply
@@ -585,8 +596,7 @@ void Multiply
     Y *= beta;
 
     A.InitializeMultMeta();
-    const auto& meta = A.multMeta;
-
+    const auto& meta = A.LockedDistGraph().multMeta;
     // Convert the sizes and offsets to be compatible with the current width
     const Int b = X.Width();
     vector<int> recvSizes=meta.recvSizes,
@@ -692,6 +702,13 @@ void Multiply
     ( Orientation orientation, \
             T alpha, \
       const SparseMatrix<T>& A, \
+      const Matrix<T>& X, \
+            T beta, \
+            Matrix<T>& Y ); \
+    template void Multiply \
+    ( Orientation orientation, \
+            T alpha, \
+      const Graph& A, \
       const Matrix<T>& X, \
             T beta, \
             Matrix<T>& Y ); \
